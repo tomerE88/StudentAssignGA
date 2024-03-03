@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Population {
     
-    private Individual[] individuals; // array of single solutions
+    protected Individual[] individuals; // array of single solutions
     private double populationFitness = -1; // fitness of the population
     // add population size
 
@@ -15,17 +15,6 @@ public class Population {
         for (int i = 0; i < populationSize; i++) {
             this.individuals[i] = new Individual();
         }
-    }
-
-    // generate random population
-    public Population generateRandomPopulation(int populationSize) {
-        Population population = new Population(populationSize);
-        for (int i = 0; i < populationSize; i++) {
-            Individual individual = new Individual();
-            individual.generateRandomIndividual();
-            population.individuals[i] = individual;
-        }
-        return population;
     }
 
     // getters

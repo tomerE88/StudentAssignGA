@@ -25,9 +25,9 @@ public class ClassRoom {
     public ClassRoom generateRandomClassroom(int i) {
         int classID = i;
         String className = "Class" + classID;
-        int maxStudents = rand.nextInt(50);
-        int minStudents = rand.nextInt(50);
-        int majorID = rand.nextInt(100);
+        // int maxStudents = rand.nextInt(50);
+        // int minStudents = rand.nextInt(50);
+        // int majorID = rand.nextInt(100);
         return new ClassRoom(classID, className, maxStudents, minStudents, majorID);
     }
 
@@ -62,6 +62,19 @@ public class ClassRoom {
             // Handle the case of exceeding maximum capacity
             System.out.println("Error: Class is already at maximum capacity. Cannot add more students.");
         }
+    }
+
+    // Method to get number of students in the class
+    public int getNumStudents() {
+        return this.students.size();
+    }
+
+    // gets student and index and set the student in the index
+    public void setStudent(int index, Student student) {
+        if (index < this.students.size() && index >= 0)
+            this.students.set(index, student);
+        else
+            System.out.println("Error: Index out of bounds");
     }
 
     // Method to display class room information

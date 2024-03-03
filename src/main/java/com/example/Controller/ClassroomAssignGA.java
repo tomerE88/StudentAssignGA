@@ -23,7 +23,7 @@ public class ClassroomAssignGA {
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
         this.eliteCount = eliteCount;
-        this.pop = initPopulation();
+        this.pop = generateRandomPopulation(this.populationSize);
 
     }
 
@@ -73,30 +73,41 @@ public class ClassroomAssignGA {
         return countGenerations;
     }
 
-    // function that initializes the population
-    public Population initPopulation() {
-        return pop.generateRandomPopulation(populationSize);
+    public Population getPopulation() {
+        return pop;
     }
 
-    public void doGeneration() {
+    // generate random population
+    public Population generateRandomPopulation(int populationSize) {
+        Population population = new Population(populationSize);
+        for (int i = 0; i < populationSize; i++) {
+            Individual individual = new Individual();
+            individual.generateRandomIndividual();
+            pop.individuals[i] = individual;
+        }
+        return population;
+    }
+
+    // function that creates a new generation
+    public void createGeneration() {
 
         // get parents
-        Individual parent1 = getParent();
-        Individual parent2 = getParent();
+        Individual parent1 = createRouletteWheel();
+        Individual parent2 = createRouletteWheel();
         
         while (parent1 == parent2) {
-            parent2 = tournamentSelection();
+            parent2 = createRouletteWheel();
         }
 
-        // perform crossover
-        crossover(pop);
+        // crossover
+        if (Math.random() < crossoverRate) {
+            crossover(parent1, parent2);
+        }
 
         // mutate
-    }
-
-    // return one parent from previous population
-    public Individual getParent() {
-        return null;
+        if (Math.random() < mutationRate) {
+            mutation(pop.getFittest());
+        }
     }
 
     // fuction that selects the best individuals from the population. gets two random individuals and returns the best one
@@ -109,15 +120,14 @@ public class ClassroomAssignGA {
         while (candidate1 == candidate2) {
             candidate2 = getRandomIndividual();
         }
-        if (candidate1.getFitness() > candidate2.getFitness()) {
+        if (candidate1.getFitness() > candidate2.getFitness())
             return candidate1;
-        } else {
-            return candidate2;
-        }
+
+        return candidate2; 
     }
 
-    // functions that creates a roulette wheel for the population
-    public Individual createRouletteWheel() throws Exception {
+    // functions that creates a roulette wheel for the population and returns one individual
+    public Individual createRouletteWheel() {
         // sum of all the fitness of the individuals in the population
         double sum = pop.sumFitness();
         // array of the proportions of the individuals in the population
@@ -145,7 +155,7 @@ public class ClassroomAssignGA {
                 return pop.getIndividual(i);
             }
         }
-        throw new Exception("Error: Roulette wheel selection failed");
+        return null;
     }
     
     private Individual getRandomIndividual() {
@@ -164,19 +174,49 @@ public class ClassroomAssignGA {
 
     // procedure that add a mutation to the population - 
     // gets one of the individual answers and make a random change in it
-    private void mutation() {
-        return;
+    private void mutation(Individual individual) {
+        // random number between 0 and length of the individual.classrooms - 1
+        int randClass1 = (int) (Math.random() * individual.getClassroomsLength());
+        int randClass2 = (int) (Math.random() * individual.getClassroomsLength());
+        // get the classrooms
+        ClassRoom class1 = individual.getClassroom(randClass1);
+        ClassRoom class2 = individual.getClassroom(randClass2);
+        // get a random student from each class
+        int randStud1 = (int) (Math.random() * class1.getNumStudents());
+        int randStud2 = (int) (Math.random() * class2.getNumStudents());
+        // get the students
+        Student stud1 = class1.getStudents().get(randStud1);
+        Student stud2 = class2.getStudents().get(randStud2);
+
+        // loops until the students are different
+        while (stud1 == stud2) {
+            randStud2 = (int) (Math.random() * class2.getNumStudents());
+            stud2 = class2.getStudents().get(randStud2);
+
+        }
+        // change the students
+        class1.setStudent(randStud2, stud2);
+        class2.setStudent(randStud1, stud1);
+        
     }
 
-    private Population crossover(Population pop)
-    {
-        int i;
-        Population newPop = new Population(pop.populationSize());
-
-        for (i = 0; i < pop.populationSize(); i++) {
-            return pop;
+    // procedure that makes the crossover between two individuals!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!fix
+    public Individual crossover (Individual parent1, Individual parent2) {
+        int halfLen = parent1.getClassroomsLength() / 2;
+        // create a new individual
+        Individual newIndividual = new Individual();
+        // loop through the classrooms
+        for (int i = 0; i < parent1.getClassroomsLength(); i++) {
+            // if the index is less than half the length, add the classroom from parent1
+            if (i < halfLen) {
+                newIndividual.addClassroom(parent1.getClassroom(i), i);
+            }
+            // if the index is greater than half the length, add the classroom from parent2
+            else {
+                newIndividual.addClassroom(parent2.getClassroom(i), i);
+            }
         }
-        return pop;
+        return newIndividual;
     }
 
     private double calculateFitness() {
@@ -185,6 +225,19 @@ public class ClassroomAssignGA {
 
     public void evalPopulation(Population pop) {
         return;
+    }
+
+    // function that runs the evolution cycle
+    public void evolutionCycle() {
+        // loops until the finishGeneration function returns false (reached max generations or max fitness)
+        while (!finishGeneration(pop)) {
+            // create a new generation
+            createGeneration();
+            // evaluate the population
+            evalPopulation(pop);
+            // increment the count of generations
+            countGenerations++;
+        }
     }
 
 }

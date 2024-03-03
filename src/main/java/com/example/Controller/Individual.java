@@ -57,5 +57,10 @@ public class Individual {
             // this.classrooms[i] = generateRandomClassroom();
         }
     }
+
+    // get a classroom and an index and add it to the individual at the index
+    public void addClassroom(ClassRoom classroom, int index) {
+        this.classrooms[index] = classroom;
+    }
 // yup baby
 }

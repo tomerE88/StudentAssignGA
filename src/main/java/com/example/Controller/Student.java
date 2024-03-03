@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class Student {
     // Attributes of the Student class
-    protected int studentID;
+    protected String studentID;
     protected String name;
     protected String gender;
     protected double averageGrades;
@@ -17,7 +17,7 @@ public class Student {
     protected int[] friends;
 
     // Constructor to initialize a new Student object
-    public Student(int studentID, String name, String gender, double averageGrades, int cityID) {
+    public Student(String studentID, String name, String gender, double averageGrades, int cityID) {
         this.studentID = studentID;
         this.name = name;
         this.gender = gender;
@@ -27,7 +27,7 @@ public class Student {
         this.friends = friends;
     }
 
-    public Student(int studentID, String name, String gender, double averageGrades, int cityID, int[] friends) {
+    public Student(String studentID, String name, String gender, double averageGrades, int cityID, int[] friends) {
         this.studentID = studentID;
         this.name = name;
         this.gender = gender;
@@ -38,11 +38,11 @@ public class Student {
     }
 
     // Getters and Setters for each attribute
-    public int getStudentID() {
+    public String getStudentID() {
         return studentID;
     }
 
-    public void setStudentID(int studentID) {
+    public void setStudentID(String studentID) {
         this.studentID = studentID;
     }
 

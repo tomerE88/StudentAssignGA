@@ -1,9 +1,15 @@
-package com.example.Controller;
+package com.example.Controller.Database;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.example.Controller.ClassRoom;
+import com.example.Controller.Major;
 import com.example.Controller.Student;
 
 public class DB {
     private Connection connection; // the connection to the mysqlS
+    
     // constructor
     public DB() {
         this.connection = null; // if wont connect connection will be null
@@ -56,7 +62,7 @@ public class DB {
             int i = 0;
             while (resultSet.next() && i<3) {
                 mp[i].majorID = resultSet.getInt(2);
-                System.out.println(mp[i].majorID);
+                System.out.println(mp[i].getMajorID());
                 i++;
             }
         }
@@ -104,24 +110,22 @@ public class DB {
     }
 
     // the procedure return array of students and insert every student from the database to this array
-    public Student[] getAllStudents() {
-        int count = getNumOfStudents();
-        Student[] students = new Student[count];
+    public Map<String, Student> getAllStudents() {
+        Map<String, Student> students = new HashMap<String, Student>();
         try {
-            // create a statement
-            // the query that gets all the students sorted by their ID
+            // a query that gets all the students sorted by their ID
             PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM students\n" +
             "ORDER BY studentID;");
             ResultSet resultSet = statement.executeQuery();
-            int i = 0;
             // for each of the students that we got, insert into the array
             while (resultSet.next()) {
-                students[i].studentID = resultSet.getInt(1);
-                students[i].name = resultSet.getString(2);
-                students[i].gender = resultSet.getString(3);
-                students[i].averageGrades = resultSet.getDouble(4);
-                students[i].cityID = resultSet.getInt(5);
-                i++;
+                students.put(resultSet.getString("studentID"), 
+                new Student(
+                    resultSet.getString("studentID"),
+                    resultSet.getString("name"),
+                    resultSet.getString("gender"),
+                    resultSet.getDouble("averageGrades"),
+                    resultSet.getInt("cityID")));
             }
         }
         catch (Exception e) {
@@ -148,9 +152,8 @@ public class DB {
     }
 
     // the procedure return array of classrooms and insert every classroom from the database to this array
-    public Student[] getAllClassroom() {
-        int count = getNumOfStudents();
-        Student[] students = new Student[count];
+    public Map<String, ClassRoom> getAllClassrooms() {
+        Map<String, ClassRoom> classrooms = new HashMap<String, ClassRoom>();
         try {
             // create a statement
             // the query that gets all the students sorted by their ID
@@ -158,20 +161,20 @@ public class DB {
             "ORDER BY classID;");
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
-            // for each of the students that we got, insert into the array
-            // while (resultSet.next()) {
-            //     students[i].studentID = resultSet.getInt(1);
-            //     students[i].name = resultSet.getString(2);
-            //     students[i].gender = resultSet.getString(3);
-            //     students[i].averageGrades = resultSet.getDouble(4);
-            //     students[i].cityID = resultSet.getInt(5);
-            //     i++;
-            // }
+            while (resultSet.next()) {
+                classrooms.put(resultSet.getString("classID"), 
+                new ClassRoom(
+                    resultSet.getInt("classID"),
+                    resultSet.getString("className"),
+                    resultSet.getInt("maxStudents"),
+                    resultSet.getInt("minStudents"),
+                    resultSet.getInt("majorID")));
+            }
         }
         catch (Exception e) {
             System.out.println(e);
         }
-        return students;
+        return classrooms;
     }
 
 
@@ -184,8 +187,8 @@ public class DB {
         "FROM students s\n" + // from students
         "WHERE s.cityID = ?\n" + // all students that live in same city as the given student 
         "AND s.studentID != ?;"); // except for the student itself
-        statement.setInt(1, stud.cityID);
-        statement.setInt(2, stud.studentID);
+        statement.setInt(1, stud.getCityID());
+        statement.setString(2, stud.getStudentID());
         ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
@@ -213,7 +216,7 @@ public class DB {
             if (resultSet.next()) {
                 // creates a new student
                 stud = new Student(
-                        resultSet.getInt("studentID"),
+                        resultSet.getString("studentID"),
                         resultSet.getString("name"),
                         resultSet.getString("gender"),
                         resultSet.getDouble("averageGrades"),
@@ -277,7 +280,7 @@ public class DB {
             stud = db.getStudentFromID("100000002");
             System.out.println("*****************************");
             System.out.println("gerso");
-            System.out.println(stud.name);
+            System.out.println(stud.getName());
             int l = db.sameCity(citizens, stud);
             System.out.println("*****************************");
 
