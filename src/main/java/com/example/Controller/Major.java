@@ -2,7 +2,7 @@ package com.example.Controller;
 
 public class Major {
     // Attributes of the Major class
-    protected int majorID;
+    public int majorID;
     protected String name;
     protected double requiredGrade; // Minimum grade required for this major
 

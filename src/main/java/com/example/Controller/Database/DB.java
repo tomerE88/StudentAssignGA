@@ -18,7 +18,7 @@ public class DB {
 
     // connect to the mysql database
     public void connectSql() {
-        String url = "jdbc:mysql://localhost:3306/mydb?serverTimezone=Asia/Jerusalem";
+        String url = "jdbc:mysql://localhost:3306/assignstudents?serverTimezone=Asia/Jerusalem";
         String username = "root";
         String password = "Tomer1234";
         try {
@@ -41,6 +41,36 @@ public class DB {
         } catch (SQLException e) {
             System.out.println("Error closing the database connection: " + e.getMessage());
         }
+    }
+
+
+    // summon function FitnessFunction from the database, and save the result in a double variable
+    public double fitnessFunction(int majorPrefRank, int friendsRank, int sameCityRank, int genderRank, int specialAssignRank, int studentTypeRank, int gradesRank) {
+        double fitness = 0;
+        try {
+            // the query that gets the FitnessFunction function from the database
+            String fitnessStr = "SELECT FitnessFunction(?, ?, ?, ?, ?, ?, ?)";
+            // create a statement
+            PreparedStatement statement = this.connection.prepareStatement(fitnessStr);
+            // set all the parameters of the function
+            statement.setInt(1, majorPrefRank);
+            statement.setInt(2, friendsRank);
+            statement.setInt(3, sameCityRank);
+            statement.setInt(4, genderRank);
+            statement.setInt(5, specialAssignRank);
+            statement.setInt(6, studentTypeRank);
+            statement.setInt(7, gradesRank);
+            // execute the query
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                // save the result in the variable
+                fitness = resultSet.getDouble(1);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return fitness;
     }
     
 
@@ -93,22 +123,6 @@ public class DB {
         }
     }
 
-    public int getNumOfStudents() {
-        int count = 0;
-        try {
-            PreparedStatement statement = this.connection.prepareStatement("SELECT COUNT(*)\n" +
-            "FROM students;");
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
-            }
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        return count;
-    }
-
     // the procedure return array of students and insert every student from the database to this array
     public Map<String, Student> getAllStudents() {
         Map<String, Student> students = new HashMap<String, Student>();
@@ -132,23 +146,6 @@ public class DB {
             System.out.println(e);
         }
         return students;
-    }
-
-
-    public int getNumOfClasses() {
-        int count = 0;
-        try {
-            PreparedStatement statement = this.connection.prepareStatement("SELECT COUNT(*)\n" +
-            "FROM classRoom;");
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
-            }
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        return count;
     }
 
     // the procedure return array of classrooms and insert every classroom from the database to this array
@@ -178,30 +175,7 @@ public class DB {
     }
 
 
-    // return all studentID's of every student that is in the same city as the studentID
-    // will not include the selected student
-    public int sameCity(int[] citizens, Student stud) {
-        int i = 0;
-        try {
-        PreparedStatement statement = this.connection.prepareStatement("SELECT s.studentID\n" + 
-        "FROM students s\n" + // from students
-        "WHERE s.cityID = ?\n" + // all students that live in same city as the given student 
-        "AND s.studentID != ?;"); // except for the student itself
-        statement.setInt(1, stud.getCityID());
-        statement.setString(2, stud.getStudentID());
-        ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                citizens[i] = resultSet.getInt(1);
-                System.out.println(citizens[i]);
-                i++;
-            }
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        return i;
-    }
+    
 
     // get studentID and return the student
     public Student getStudentFromID(String studentID) {
@@ -264,51 +238,18 @@ public class DB {
 
     public static void main(String[] args) {
 
-        DB db = new DB();
-        // String url = "jdbc:mysql://localhost:3306/mydb?serverTimezone=Asia/Jerusalem";
-        // String username = "root";
-        // String password = "Tomer1234";
         try {
-            // Class.forName("com.mysql.cj.jdbc.Driver");
-            // Connection connection = DriverManager.getConnection(url, username, password);
-            // Statement statement = connection.createStatement();
 
-
+            DB db = new DB();
             // make a student out of studentID 100000002 and print all ID's of students in same city as him
             Student stud;
-            int citizens[] = new int[10];
+            double fitness = db.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
             stud = db.getStudentFromID("100000002");
             System.out.println("*****************************");
             System.out.println("gerso");
             System.out.println(stud.getName());
-            int l = db.sameCity(citizens, stud);
+            System.out.println("fitness: " + fitness);
             System.out.println("*****************************");
-
-            
-            // int studID = 100000002;
-            // String majorStr = "SELECT s.studentID, m.majorID, m.name, sp.preference\n" + //
-            //                     "FROM students AS s\n" + //
-            //                     "JOIN studentpreferences AS sp ON s.studentID = sp.studentID\n" + //
-            //                     "JOIN major AS m ON sp.majorID = m.majorID\n" + //
-            //                     "WHERE sp.preference <= 3\n" + //
-            //                     "AND sp.studentID = " + studID +"\n"+ //
-            //                     "ORDER BY sp.preference;";
-            // String dfdff = "select studentID, name, gender from students order by studentID;";
-
-            //     ResultSet resultSet = statement.executeQuery(dfdff);
-                // int i = 0;
-                // while (resultSet.next() && i<3) {
-                //     mp[i].majorID = resultSet.getInt(2);
-                //     System.out.println(mp[i].majorID);
-                //     i++;
-                // }
-                // int i = 0;
-                // while (resultSet.next()) {
-                //     System.out.println(resultSet.getString(1));
-                //     System.out.println(resultSet.getString(2));
-                //     System.out.println(resultSet.getString(3));
-                //     i++;
-                // }
     
                 db.disconnectSql();
         }

@@ -2,6 +2,8 @@ package com.example.Controller;
 
 import java.util.Map;
 
+import com.example.Controller.Database.DB;
+
 public class MainGA {
 
     private Map<String, Student> students;

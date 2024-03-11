@@ -10,7 +10,7 @@ public class Student {
     protected String name;
     protected String gender;
     protected double averageGrades;
-    protected int cityID;
+    public int cityID;
     // list of top 3 majors that the student wants (index 0 is the best and index 2 is least best)
     protected Major[] majorPreferences;
     // list of top 3 friends of student (index 0 is the best and index 2 is least best)

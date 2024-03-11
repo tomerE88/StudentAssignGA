@@ -3,7 +3,8 @@ package com.example.Controller;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import com.example.Controller.DB;
+
+import com.example.Controller.Database.DB;
 
 public class Individual {
 
