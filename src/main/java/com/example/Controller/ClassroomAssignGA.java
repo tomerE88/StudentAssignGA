@@ -23,7 +23,7 @@ public class ClassroomAssignGA {
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
         this.eliteCount = eliteCount;
-        this.pop = generateRandomPopulation(this.populationSize);
+        this.pop = generateRandomPopulation();
 
     }
 
@@ -78,12 +78,25 @@ public class ClassroomAssignGA {
     }
 
     // generate random population
-    public Population generateRandomPopulation(int populationSize) {
-        Population population = new Population(populationSize);
-        for (int i = 0; i < populationSize; i++) {
-            Individual individual = new Individual();
+    public Population generateRandomPopulation() {
+        MainGA mainga = new MainGA();
+        Population population = new Population(this.populationSize);
+
+        // loop through all the individuals in the population
+        for (int i = 0; i < this.populationSize; i++) {
+            // Create a new list for the classrooms that will be passed to the new individual
+            ClassRoom[] classroomsForIndividual = new ClassRoom[mainga.getClassrooms().length];
+
+            // Populate the new array with copies of the ClassRoom instances
+            for (int j = 0; j < mainga.getClassrooms().length; j++) {
+                classroomsForIndividual[j] = new ClassRoom(mainga.getClassrooms()[j]); // Use the copy constructor
+            }
+
+            Individual individual = new Individual(classroomsForIndividual);
+            // generate a random individual
             individual.generateRandomIndividual();
-            pop.individuals[i] = individual;
+            // add the individual to the population
+            population.individuals[i] = individual;
         }
         return population;
     }
@@ -91,22 +104,37 @@ public class ClassroomAssignGA {
     // function that creates a new generation
     public void createGeneration() {
 
-        // get parents
-        Individual parent1 = createRouletteWheel();
-        Individual parent2 = createRouletteWheel();
-        
-        while (parent1 == parent2) {
-            parent2 = createRouletteWheel();
-        }
+        for (int i = 0; i < this.populationSize; i++) {
+            // get parents
+            Individual parent1 = createRouletteWheel();
+            Individual parent2 = createRouletteWheel();
+            // if no crossover, the new individuals are the same as the parents
+            Individual newIndividual1 = parent1;
+            Individual newIndividual2 = parent2;
+            
+            while (parent1 == parent2) {
+                parent2 = createRouletteWheel();
+            }
 
-        // crossover
-        if (Math.random() < crossoverRate) {
-            crossover(parent1, parent2);
-        }
+            // crossover if the random number is less than the crossover rate and the individual is not an elite
+            if ((Math.random() < crossoverRate) && i > eliteCount) {
+                newIndividual1 = crossover(parent1, parent2);
+                newIndividual2 = crossover(parent2, parent1);
+            }
 
-        // mutate
-        if (Math.random() < mutationRate) {
-            mutation(pop.getFittest());
+            // mutate first individual if it is not an elite
+            if (Math.random() < mutationRate && i > eliteCount) {
+                mutation(newIndividual1);
+            }
+            // mutate second individual if it is not an elite
+            if (Math.random() < mutationRate && i > eliteCount) {
+                mutation(newIndividual2);
+            }
+            
+            // add the new individuals to the population
+            pop.individuals[i] = newIndividual1;
+            i++;
+            pop.individuals[i] = newIndividual2;
         }
     }
 
@@ -172,6 +200,7 @@ public class ClassroomAssignGA {
         return (checkMaxGen || checkMaxFitness); // return true if at least one of the criterias are met
     }
 
+
     // procedure that add a mutation to the population - 
     // gets one of the individual answers and make a random change in it
     private void mutation(Individual individual) {
@@ -194,9 +223,9 @@ public class ClassroomAssignGA {
             stud2 = class2.getStudents().get(randStud2);
 
         }
-        // change the students
-        class1.setStudent(randStud2, stud2);
-        class2.setStudent(randStud1, stud1);
+        // switch between the students
+        class1.switchStudents(stud1, stud2);
+        class2.switchStudents(stud2, stud1);
         
     }
 
@@ -238,6 +267,14 @@ public class ClassroomAssignGA {
             // increment the count of generations
             countGenerations++;
         }
+    }
+
+    public static void main(String[] args) {
+        MainGA mainga = new MainGA();
+        System.out.println("**************************************");
+        ClassroomAssignGA classroomAssignGA = new ClassroomAssignGA(100, 100, 0.01, 0.9, 2);
+        System.out.println("**************************************");
+        System.out.println("Individual: " + classroomAssignGA.getPopulation().getIndividual(0));
     }
 
 }

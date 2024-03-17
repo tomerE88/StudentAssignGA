@@ -1,10 +1,9 @@
 package com.example.Controller;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
 
-import com.example.Controller.Database.DB;
+import com.example.Controller.MainGA;
 
 public class Individual {
 
@@ -20,9 +19,6 @@ public class Individual {
 
     public Individual() {
         this.classrooms = new ClassRoom[numClassrooms];
-        for (int i = 0; i < numClassrooms; i++) {
-            //this.classrooms[i] = getClassRoomFromID(i + 1);
-        }
     }
 
     // getters
@@ -53,9 +49,21 @@ public class Individual {
         this.fitness = fitness;
     }
 
+    // generate a random individual for the first population. add random students to the different classrooms
     public void generateRandomIndividual() {
-        for (int i = 0; i < numClassrooms; i++) {
-            // this.classrooms[i] = generateRandomClassroom();
+        MainGA mainga = new MainGA();
+        ArrayList<Student> students = new ArrayList<Student>(mainga.getStudents().values());
+
+        // select random students for the classroom !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the is not true because i loop for every random and for each one do it 10 times
+        for (int i = 0; i < students.size(); i++) {
+            // loops for all classrooms
+            for (int j = 0; j < classrooms.length; j++) {
+                int rand = (int) (Math.random() * (students.size()-1));
+                // add one student to each class at a time
+                this.classrooms[j].addStudent(students.get(rand));
+                // remove the student from the list
+                students.remove(rand);
+            }
         }
     }
 
@@ -63,5 +71,22 @@ public class Individual {
     public void addClassroom(ClassRoom classroom, int index) {
         this.classrooms[index] = classroom;
     }
-// yup baby
+
+    public static void main(String[] args) {
+        MainGA mainga = new MainGA();
+        Individual individual = new Individual(mainga.getClassrooms());
+        System.out.println("**************************************");
+        individual.generateRandomIndividual();
+        System.out.println("**************************************");
+        System.out.println("Individual: " + individual.getClassroom(0).getStudents());
+
+
+        // create evaluator and get values from individual
+        FitnessEvaluator evaluator = new FitnessEvaluator(mainga.getStudents().values().toArray(new Student[0]), individual.getClassrooms());
+        System.out.println("**************************************");
+        System.out.println(evaluator.getStudents()[0].getMajorPreferences()[0] + " " + evaluator.getStudents()[0].getMajorPreferences()[1] + " " + evaluator.getStudents()[0].getMajorPreferences()[2]);
+        double fitnessScore = evaluator.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
+        System.out.println("Calculated fitness score: " + fitnessScore);
+    }
+
 }

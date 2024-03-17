@@ -1,31 +1,81 @@
 package com.example.Controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.example.Controller.Database.DB;
 
 public class MainGA {
 
-    private Map<String, Student> students;
-    private Map<String, ClassRoom> classrooms;
     private DB db;
+    private HashMap<String, Student> students;
+    private ClassRoom[] classrooms;
+    private SpecialRequest[] specialRequests;
+
+    // setters and getters
+    public DB getDb() {
+        return db;
+    }
+
+    public void setDb(DB db) {
+        this.db = db;
+    }
+
+    public HashMap<String, Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(HashMap<String, Student> students) {
+        this.students = students;
+    }
+
+    public ClassRoom[] getClassrooms() {
+        return classrooms;
+    }
+
+    public void setClassrooms(ClassRoom[] classrooms) {
+        this.classrooms = classrooms;
+    }
+
+    public SpecialRequest[] getSpecialRequests() {
+        return specialRequests;
+    }
+
+    public void setSpecialRequests(SpecialRequest[] specialRequests) {
+        this.specialRequests = specialRequests;
+    }
+
+    public MainGA() {
+         // get all students from the database
+         this.db = new DB();
+         this.students = this.db.getAllStudents();
+         this.classrooms = this.db.getAllClassrooms();
+         // for each student add their friends
+         for (Student student : this.students.values()) {
+             student.setFriends(this.db.getFriendsFromID(student.getStudentID()));
+         }
+         // for each student add their major preferences
+         for (Student student : this.students.values()) {
+             student.setMajorPreferences(this.db.getMajorPreferencesFromID(student.getStudentID()));
+         }
+
+         this.specialRequests = this.db.getAllSpecialRequests();
+    }
 
     public static void main(String[] args) {
         MainGA mainga = new MainGA();
-        // get all students from the database
-        DB db = new DB();
-        // Connect to the database
-        db.connectSql();
-        mainga.students = db.getAllStudents();
-        mainga.classrooms = db.getAllClassrooms();
-
 
         System.out.println("**************************************************************************");
         // print the student with the key 100000002
         System.out.println("student 100000002: " + mainga.students.get("100000002"));
+        Student friends[] = mainga.students.get("100000002").getFriends();
+        System.out.println("friends of student 100000002: " + friends[0].getStudentID() + " " + friends[1].getStudentID() + " " + friends[2].getStudentID());
+        Major majorPreferences[] = mainga.students.get("100000002").getMajorPreferences();
+        System.out.println("major preferences of student 100000002: " + majorPreferences[0].getMajorID() + " " + majorPreferences[1].getMajorID() + " " + majorPreferences[2].getMajorID());
         // print the classroom with the key 2
-        System.out.println("classroom2: " + mainga.classrooms.get("2"));
+        System.out.println("classroom2: " + mainga.classrooms[2]);
         System.out.println("**************************************************************************");
+        System.out.println(mainga.specialRequests[0].getStudentID1() + " " + mainga.specialRequests[0].getStudentID2() + " " + mainga.specialRequests[0].getReason());
 
 
 
@@ -42,6 +92,6 @@ public class MainGA {
         System.out.println("Best solution: " + population.getFittest().toString());
 
         // Close the database connection
-        db.disconnectSql();
+        mainga.db.disconnectSql();
     }
 }

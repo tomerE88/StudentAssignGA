@@ -10,29 +10,39 @@ public class Student {
     protected String name;
     protected String gender;
     protected double averageGrades;
-    public int cityID;
+    protected int cityID;
+    protected int codeType;
     // list of top 3 majors that the student wants (index 0 is the best and index 2 is least best)
     protected Major[] majorPreferences;
     // list of top 3 friends of student (index 0 is the best and index 2 is least best)
-    protected int[] friends;
+    protected Student[] friends;
 
     // Constructor to initialize a new Student object
-    public Student(String studentID, String name, String gender, double averageGrades, int cityID) {
+    public Student(String studentID, String name, String gender, double averageGrades, int cityID, int codeType) {
         this.studentID = studentID;
         this.name = name;
         this.gender = gender;
         this.averageGrades = averageGrades;
         this.cityID = cityID;
-        // DB.preferencesForStudent(this.majorPreferences, studentID); // fix this!!!!!!!!!!!!
-        this.friends = friends;
+        this.codeType = codeType;
     }
 
-    public Student(String studentID, String name, String gender, double averageGrades, int cityID, int[] friends) {
+    public Student(Student student) {
+        this.studentID = student.studentID;
+        this.name = student.name;
+        this.gender = student.gender;
+        this.averageGrades = student.averageGrades;
+        this.cityID = student.cityID;
+        this.codeType = student.codeType;
+    }
+
+    public Student(String studentID, String name, String gender, double averageGrades, int cityID, int codeType, Student[] friends) {
         this.studentID = studentID;
         this.name = name;
         this.gender = gender;
         this.averageGrades = averageGrades;
         this.cityID = cityID;
+        this.codeType = codeType;
         //this.majorPreferences;
         this.friends = friends;
     }
@@ -91,18 +101,26 @@ public class Student {
         }
     }
 
-    public int[] getFriends() {
-        return friends;
+    public Student[] getFriends() {
+        return this.friends;
     }
 
-    public void setFriends(int[] friends) {
+    public void setFriends(Student[] friends) {
         if (friends.length <= 3) {
             this.friends = friends;
         } else {
             // If more than 3 friends are provided, only take the first 3
-            this.friends = new int[3];
+            this.friends = new Student[3];
             this.friends = friends;
         }
+    }
+
+    public int getCodeType() {
+        return codeType;
+    }
+
+    public void setCodeType(int codeType) {
+        this.codeType = codeType;
     }
 
     // Method to display student information
@@ -114,6 +132,7 @@ public class Student {
                ", gender='" + gender + '\'' +
                ", averageGrades=" + averageGrades +
                ", cityID=" + cityID +
+                ", codeType=" + codeType +
                ", majorPreferences=" + majorPreferences +
                ", friends=" + friends +
                '}';

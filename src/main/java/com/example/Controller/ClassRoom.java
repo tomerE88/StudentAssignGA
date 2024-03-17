@@ -10,7 +10,7 @@ public class ClassRoom {
     private int minStudents;
     private int majorID; // Major associated with the class
     // list of all students in the class
-    private List<Student> students;
+    private HashMap<String, Student> students;
 
     // Constructor to initialize a new ClassRoom object
     public ClassRoom(int classID, String className, int maxStudents, int minStudents, int majorID) {
@@ -18,7 +18,17 @@ public class ClassRoom {
         this.className = className;
         this.maxStudents = maxStudents;
         this.minStudents = minStudents;
-        this.majorID = majorID;        
+        this.majorID = majorID;
+        this.students = new HashMap<String, Student>();        
+    }
+
+    public ClassRoom(ClassRoom other) {
+        this.classID = other.classID;
+        this.className = other.className;
+        this.maxStudents = other.maxStudents;
+        this.minStudents = other.minStudents;
+        this.majorID = other.majorID;
+        this.students = new HashMap<String, Student>(other.students);
     }
 
     // generate random classroom for first population
@@ -31,7 +41,7 @@ public class ClassRoom {
         return new ClassRoom(classID, className, maxStudents, minStudents, majorID);
     }
 
-    // Getter and setter for the majorID
+
     public int getMajorID() {
         return majorID;
     }
@@ -40,12 +50,48 @@ public class ClassRoom {
         this.majorID = majorID;
     }
 
+    
+    public int getClassID() {
+        return classID;
+    }
+
+    public void setClassID(int classID) {
+        this.classID = classID;
+    }
+
+    
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    
+    public int getMaxStudents() {
+        return maxStudents;
+    }
+
+    public void setMaxStudents(int maxStudents) {
+        this.maxStudents = maxStudents;
+    }
+
+
+    public int getMinStudents() {
+        return minStudents;
+    }
+
+    public void setMinStudents(int minStudents) {
+        this.minStudents = minStudents;
+    }
+
     // Getter and setter for the students array
-    public List<Student> getStudents() {
+    public HashMap<String, Student> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(HashMap<String, Student> students) {
         if (students.size() <= maxStudents) {
             this.students = students;
         } else {
@@ -56,8 +102,9 @@ public class ClassRoom {
 
     // Method to add a single student to the class
     public void addStudent(Student student) {
+        System.out.println("Adding student " + student.getStudentID() + " to class " + this.classID);
         if (this.students.size() < maxStudents) {
-            this.students.add(student);
+            this.students.put(student.getStudentID(), student);
         } else {
             // Handle the case of exceeding maximum capacity
             System.out.println("Error: Class is already at maximum capacity. Cannot add more students.");
@@ -69,13 +116,23 @@ public class ClassRoom {
         return this.students.size();
     }
 
-    // gets student and index and set the student in the index
-    public void setStudent(int index, Student student) {
-        if (index < this.students.size() && index >= 0)
-            this.students.set(index, student);
-        else
-            System.out.println("Error: Index out of bounds");
+    // switch between two students
+    public void switchStudents(Student StudentIDRemove, Student StudentIDAdd) {
+        String studentIDRem = StudentIDRemove.getStudentID();
+        this.students.remove(studentIDRem);
+        this.students.put(StudentIDAdd.getStudentID(), StudentIDAdd);
     }
+
+    // checks if the student is in the class
+    public boolean isStudentInClass(Student student) {
+        return this.students.containsKey(student.getStudentID());
+    }
+
+    // checks if the studentID is in the class
+    public boolean isStudentInClass(String studentID) {
+        return this.students.containsKey(studentID);
+    }
+
 
     // Method to display class room information
     @Override

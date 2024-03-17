@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.example.Controller.ClassRoom;
 import com.example.Controller.Major;
+import com.example.Controller.SpecialRequest;
 import com.example.Controller.Student;
 
 public class DB {
@@ -124,8 +125,8 @@ public class DB {
     }
 
     // the procedure return array of students and insert every student from the database to this array
-    public Map<String, Student> getAllStudents() {
-        Map<String, Student> students = new HashMap<String, Student>();
+    public HashMap<String, Student> getAllStudents() {
+        HashMap<String, Student> students = new HashMap<String, Student>();
         try {
             // a query that gets all the students sorted by their ID
             PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM students\n" +
@@ -139,7 +140,8 @@ public class DB {
                     resultSet.getString("name"),
                     resultSet.getString("gender"),
                     resultSet.getDouble("averageGrades"),
-                    resultSet.getInt("cityID")));
+                    resultSet.getInt("cityID"), 
+                    resultSet.getInt("codeType")));
             }
         }
         catch (Exception e) {
@@ -148,24 +150,70 @@ public class DB {
         return students;
     }
 
-    // the procedure return array of classrooms and insert every classroom from the database to this array
-    public Map<String, ClassRoom> getAllClassrooms() {
-        Map<String, ClassRoom> classrooms = new HashMap<String, ClassRoom>();
+    // get number of special requests in the database
+    public int getNumSpecialRequests() {
+        int numSpecialRequests = 0;
         try {
             // create a statement
-            // the query that gets all the students sorted by their ID
-            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM classroom\n" +
-            "ORDER BY classID;");
+            // the query that gets the number of special requests
+            PreparedStatement statement = this.connection.prepareStatement("SELECT COUNT(*) FROM specialrequests;");
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                numSpecialRequests = resultSet.getInt(1);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return numSpecialRequests;
+    }
+
+    // get all special requests from the database and insert them into a SpecialRequest array
+    public SpecialRequest[] getAllSpecialRequests() {
+
+        int countSpecialRequests = getNumSpecialRequests();
+        SpecialRequest[] specialRequests = new SpecialRequest[countSpecialRequests];
+        try {
+            // create a statement
+            // the query that gets all the special requests sorted by their ID
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM specialrequests\n" +
+            "ORDER BY studentID1, studentID2;");
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
             while (resultSet.next()) {
-                classrooms.put(resultSet.getString("classID"), 
+                specialRequests[i] = new SpecialRequest(
+                    resultSet.getString("studentID1"),
+                    resultSet.getString("studentID2"),
+                    resultSet.getString("reason"));
+                i++;
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return specialRequests;
+    }
+
+    // the procedure return map of classroomIDs and classrooms and insert every classroom from the database to this array
+    public ClassRoom[] getAllClassrooms() {
+        int i = 0;
+        int numofclasses = getNumClassrooms();
+        ClassRoom[] classrooms = new ClassRoom[numofclasses];
+        try {
+            // create a statement
+            // the query that gets all the classrooms sorted by their ID
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM classrooms\n" +
+            "ORDER BY classroomID;");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                classrooms[i] = (
                 new ClassRoom(
-                    resultSet.getInt("classID"),
-                    resultSet.getString("className"),
+                    resultSet.getInt("classroomID"),
+                    resultSet.getString("classroomName"),
                     resultSet.getInt("maxStudents"),
                     resultSet.getInt("minStudents"),
-                    resultSet.getInt("majorID")));
+                    resultSet.getInt("classroomMajor")));
+                    i++;
             }
         }
         catch (Exception e) {
@@ -174,7 +222,113 @@ public class DB {
         return classrooms;
     }
 
+    // get number of classerooms in the database
+    public int getNumClassrooms() {
+        int numClassrooms = 0;
+        try {
+            // create a statement
+            // the query that gets the number of classrooms
+            PreparedStatement statement = this.connection.prepareStatement("SELECT COUNT(*) FROM classrooms;");
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                numClassrooms = resultSet.getInt(1);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return numClassrooms;
+    }
 
+    // get all the majors from the database and insert them into a map
+    public HashMap<Integer, Major> getAllMajors() {
+        HashMap<Integer, Major> majors = new HashMap<Integer, Major>();
+        try {
+            // create a statement
+            // the query that gets all the majors sorted by their ID
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM majors\n" +
+            "ORDER BY majorID;");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                majors.put(resultSet.getInt("majorID"), 
+                new Major(
+                    resultSet.getInt("majorID"),
+                    resultSet.getString("majorName"), 
+                    resultSet.getDouble("requiredGrade")));
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return majors;
+    }
+
+    // get all the cities from the database and insert them into a map
+    public Map<Integer, String> getAllCities() {
+        Map<Integer, String> cities = new HashMap<Integer, String>();
+        try {
+            // create a statement
+            // the query that gets all the cities sorted by their ID
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM city\n" +
+            "ORDER BY cityID;");
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                cities.put(resultSet.getInt("cityID"), resultSet.getString("name"));
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return cities;
+    }
+
+    // get all friends of a student and insert them into a String array of max length 3
+    public Student[] getFriendsFromID(String studentID) {
+        Student[] friends = new Student[3];
+        Student friend;
+        try {
+            PreparedStatement statement = this.connection.prepareStatement("SELECT friendID\n" +
+            "FROM friends\n" + 
+            "WHERE studentID = ?\n" +
+            "ORDER BY preference;");
+            statement.setString(1, studentID);
+            ResultSet resultSet = statement.executeQuery();
+            int i = 0;
+            while (resultSet.next() && i<3) {
+                friend = getStudentFromID(resultSet.getString(1));
+                friends[i] = new Student (friend);
+                i++;
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return friends;
+    }
+    // get all major preferences of a student and insert them into a Major array of max length 3
+    public Major[] getMajorPreferencesFromID(String studentID) {
+        Major[] majorPreferences = new Major[3];
+        try {
+            PreparedStatement statement = this.connection.prepareStatement("SELECT m.majorID, m.majorName, m.requiredGrade, mp.preference\n" +
+            "FROM students AS s\n" +
+            "JOIN majorspreferences AS mp ON s.studentID = mp.studentID\n" +
+            "JOIN majors AS m ON mp.majorID = m.majorID\n" +
+            "WHERE mp.preference <= 3\n" +
+            "AND mp.studentID = ?\n" +
+            "ORDER BY mp.preference;");
+            statement.setString(1, studentID);
+            ResultSet resultSet = statement.executeQuery();
+            int i = 0;
+            while (resultSet.next() && i<3) {
+                majorPreferences[i] = new Major(resultSet.getInt(1), resultSet.getString(2), resultSet.getDouble(3));
+                i++;
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+        return majorPreferences;
+    }
     
 
     // get studentID and return the student
@@ -194,7 +348,8 @@ public class DB {
                         resultSet.getString("name"),
                         resultSet.getString("gender"),
                         resultSet.getDouble("averageGrades"),
-                        resultSet.getInt("cityID")
+                        resultSet.getInt("cityID"), 
+                        resultSet.getInt("codeType")
                     );
                     return stud; // Return the created Student object
                 }
@@ -211,18 +366,18 @@ public class DB {
         try {
             PreparedStatement statement = this.connection.prepareStatement("SELECT *\n" +
             "FROM classroom c\n" + 
-            "WHERE c.classID = ?;");
+            "WHERE c.classroomID = ?;");
             statement.setInt(1, classID);
             ResultSet resultSet = statement.executeQuery();
             // checks if there is a student with this ID
             if (resultSet.next()) {
                 // creates a new student
                 classRoom = new ClassRoom(
-                        resultSet.getInt("classID"),
-                        resultSet.getString("className"),
+                        resultSet.getInt("classroomID"),
+                        resultSet.getString("classroomName"),
                         resultSet.getInt("maxStudents"),
                         resultSet.getInt("minStudents"),
-                        resultSet.getInt("majorID")
+                        resultSet.getInt("classroomMajor")
                     );
                     return classRoom;
                 }

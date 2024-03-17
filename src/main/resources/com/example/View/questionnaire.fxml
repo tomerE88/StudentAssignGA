@@ -19,7 +19,7 @@
                   <Image url="@image-removebg-preview%20(27).png" />
                </image>
             </ImageView>
-            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="96.0" prefWidth="363.0" text="CRITERIA" textAlignment="CENTER">
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="96.0" prefWidth="363.0" text="CRITERIAS" textAlignment="CENTER">
                <font>
                   <Font name="System Bold" size="40.0" />
                </font>
@@ -75,6 +75,44 @@
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
                <children>
+                  <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="grades" textAlignment="CENTER">
+                     <font>
+                        <Font name="Stencil" size="19.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+                  <ChoiceBox id="grades" fx:id="grades" prefHeight="23.0" prefWidth="184.0">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets></ChoiceBox>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </VBox>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@image-removebg-preview%20(25).png" />
+               </image>
+            </ImageView>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
+               <children>
+                  <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="student type" textAlignment="CENTER">
+                     <font>
+                        <Font name="Stencil" size="20.0" />
+                     </font>
+                  </Label>
+                  <ChoiceBox id="studentType" fx:id="studentType" prefHeight="23.0" prefWidth="184.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
+               <children>
                   <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="Preferences" textAlignment="CENTER">
                      <font>
                         <Font name="Stencil" size="20.0" />
@@ -83,11 +121,6 @@
                   <ChoiceBox id="preferencesID" fx:id="preferences" prefHeight="23.0" prefWidth="184.0" />
                </children>
             </VBox>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@image-removebg-preview%20(25).png" />
-               </image>
-            </ImageView>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
                <children>
                   <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="Special Occasions" textAlignment="CENTER">

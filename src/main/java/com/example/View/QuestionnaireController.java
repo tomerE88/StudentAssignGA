@@ -28,7 +28,14 @@ public class QuestionnaireController {
     private ChoiceBox<Integer> specialOccasions;
 
     @FXML
+    private ChoiceBox<Integer> grades;
+
+    @FXML
+    private ChoiceBox<Integer> studentType;
+
+    @FXML
     private Button goToPlacement;
+
 
     // variables to store user's selection
     private int friendsRating;
@@ -36,6 +43,8 @@ public class QuestionnaireController {
     private int preferencesRating;
     private int sameCityRating;
     private int specialOccasionsRating;
+    private int gradesRating;
+    private int studentTypeRating;
 
     @FXML
     private void initialize() {
@@ -54,6 +63,12 @@ public class QuestionnaireController {
 
         // Add option 1-5 to Friends ChoiceBox
         IntStream.rangeClosed(1, 5).forEach(specialOccasions.getItems()::add);
+
+        // Add option 1-5 to studentType ChoiceBox
+        IntStream.rangeClosed(1, 5).forEach(studentType.getItems()::add);
+
+        // Add option 1-5 to grades ChoiceBox
+        IntStream.rangeClosed(1, 5).forEach(grades.getItems()::add);
     }
 
     @FXML
@@ -65,6 +80,9 @@ public class QuestionnaireController {
         preferencesRating = preferences.getValue();
         sameCityRating = sameCity.getValue();
         specialOccasionsRating = specialOccasions.getValue();
+        gradesRating = grades.getValue();
+        studentTypeRating = studentType.getValue();
+
 
         // Now you can use these variables as needed before switching views
         System.out.println("friendsRatings: " + friendsRating);
@@ -72,6 +90,8 @@ public class QuestionnaireController {
         System.out.println("preferencesRating: " + preferencesRating);
         System.out.println("sameCityRating: " + sameCityRating);
         System.out.println("specialOccasionsRating: " + specialOccasionsRating);
+        System.out.println("grades: " + gradesRating);
+        System.out.println("studentType: " + studentTypeRating);
 
         // Switch to the secondary view
         switchToSecondary();
