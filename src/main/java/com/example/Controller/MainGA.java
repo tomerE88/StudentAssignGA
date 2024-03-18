@@ -83,8 +83,8 @@ public class MainGA {
         ClassroomAssignGA ga = new ClassroomAssignGA(100, 100, 0.01, 0.9, 2);
         // Initialize population
         Population population = ga.getPopulation();
-        // Evaluate population
-        ga.evalPopulation(population);
+        // // Evaluate population
+        // ga.evalPopulation(population);
         
         // Print fitness
         // System.out.println("Found solution in " + generation + " generations");

@@ -49,6 +49,19 @@ public class Individual {
         this.fitness = fitness;
     }
 
+    // gets studentID and returns the student
+    public Student getStudentByID(String studentID) {
+        // loop through all classrooms and get the student
+        for (ClassRoom classroom : this.classrooms) {
+            // check if the student is in the classroom
+            if (classroom.getStudents().containsKey(studentID)) {
+                return classroom.getStudents().get(studentID);
+            }
+        }
+        // if the student is not found return null
+        return null;
+    }
+
     // generate a random individual for the first population. add random students to the different classrooms
     public void generateRandomIndividual() {
         MainGA mainga = new MainGA();
@@ -81,12 +94,12 @@ public class Individual {
         System.out.println("Individual: " + individual.getClassroom(0).getStudents());
 
 
-        // create evaluator and get values from individual
-        FitnessEvaluator evaluator = new FitnessEvaluator(mainga.getStudents().values().toArray(new Student[0]), individual.getClassrooms());
-        System.out.println("**************************************");
-        System.out.println(evaluator.getStudents()[0].getMajorPreferences()[0] + " " + evaluator.getStudents()[0].getMajorPreferences()[1] + " " + evaluator.getStudents()[0].getMajorPreferences()[2]);
-        double fitnessScore = evaluator.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
-        System.out.println("Calculated fitness score: " + fitnessScore);
+        // // create evaluator and get values from individual
+        // FitnessEvaluator evaluator = new FitnessEvaluator(mainga.getStudents().values().toArray(new Student[0]), individual.getClassrooms());
+        // System.out.println("**************************************");
+        // System.out.println(evaluator.getStudents()[0].getMajorPreferences()[0] + " " + evaluator.getStudents()[0].getMajorPreferences()[1] + " " + evaluator.getStudents()[0].getMajorPreferences()[2]);
+        // double fitnessScore = evaluator.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
+        // System.out.println("Calculated fitness score: " + fitnessScore);
     }
 
 }
