@@ -1,4 +1,4 @@
-package com.example.Controller;
+package com.example.Model;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
-package com.example.Controller;
+package com.example.Model;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.Controller.Database.DB;
+import com.example.Model.Database.DB;
 
 public class MainGA {
 
@@ -11,6 +11,7 @@ public class MainGA {
     private HashMap<String, Student> students;
     private ClassRoom[] classrooms;
     private SpecialRequest[] specialRequests;
+    private HashMap<Integer, Major> majors;
 
     // setters and getters
     public DB getDb() {
@@ -45,7 +46,16 @@ public class MainGA {
         this.specialRequests = specialRequests;
     }
 
+    public HashMap<Integer, Major> getMajors() {
+        return this.majors;
+    }
+
+    public void setMajors(HashMap<Integer, Major> majors) {
+        this.majors = majors;
+    }
+
     public MainGA() {
+        int counter = 0;
          // get all students from the database
          this.db = new DB();
          this.students = this.db.getAllStudents();
@@ -53,13 +63,20 @@ public class MainGA {
          // for each student add their friends
          for (Student student : this.students.values()) {
              student.setFriends(this.db.getFriendsFromID(student.getStudentID()));
+             counter++;
          }
+         System.out.println("hello hello hello hello hello hello hello hello hello" + counter);
          // for each student add their major preferences
          for (Student student : this.students.values()) {
              student.setMajorPreferences(this.db.getMajorPreferencesFromID(student.getStudentID()));
          }
 
+         this.majors = db.getAllMajors();
+
          this.specialRequests = this.db.getAllSpecialRequests();
+
+         // close the sql connection
+        db.disconnectSql();
     }
 
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.example.Controller;
+package com.example.Model;
 
 public class Major {
     // Attributes of the Major class

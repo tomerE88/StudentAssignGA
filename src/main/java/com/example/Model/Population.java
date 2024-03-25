@@ -1,4 +1,4 @@
-package com.example.Controller;
+package com.example.Model;
 
 import java.util.*;
 
@@ -78,10 +78,14 @@ public class Population {
 
     // order the individuals in the population by their fitness
     public void orderByFitness() {
+        // use collections.sort to order the individuals by their fitness
         Collections.sort(this.individuals, new Comparator<Individual>() {
             @Override
+            // compare the fitness of the individuals in descending order.
+            // returns negetive number if o2 is less than o1, positive if greater and 0 if equal.
             public int compare(Individual o1, Individual o2) {
-                return Double.compare(o1.getFitness(), o2.getFitness());
+                // switched from o1.getFitness() - o2.getFitness() to o2.getFitness() - o1.getFitness() to sort in descending order from highest to lowest
+                return Double.compare(o2.getFitness(), o1.getFitness());
             }
         });
     }

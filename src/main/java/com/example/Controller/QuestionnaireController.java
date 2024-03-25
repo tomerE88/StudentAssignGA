@@ -1,4 +1,4 @@
-package com.example.View;
+package com.example.Controller;
 
 import java.io.IOException;
 
@@ -8,6 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import java.util.stream.IntStream;
+
+import com.example.View.App;
 
 
 public class QuestionnaireController {

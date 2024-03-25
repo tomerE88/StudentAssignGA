@@ -1,12 +1,14 @@
-package com.example.Controller.Database;
+package com.example.Model.Database;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.example.Controller.ClassRoom;
-import com.example.Controller.Major;
-import com.example.Controller.SpecialRequest;
-import com.example.Controller.Student;
+import javax.net.ssl.SSLException;
+
+import com.example.Model.ClassRoom;
+import com.example.Model.Major;
+import com.example.Model.SpecialRequest;
+import com.example.Model.Student;
 
 public class DB {
     private Connection connection; // the connection to the mysqlS
@@ -19,12 +21,15 @@ public class DB {
 
     // connect to the mysql database
     public void connectSql() {
-        String url = "jdbc:mysql://localhost:3306/assignstudents?serverTimezone=Asia/Jerusalem";
+        String url = "jdbc:mysql://localhost:3306/assignstudents?serverTimezone=Asia/Jerusalem&useSSL=false";
         String username = "root";
         String password = "Tomer1234";
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.connection = DriverManager.getConnection(url, username, password);
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println("MySQL JDBC driver not found: " + e);
         }
         catch (Exception e) {
             System.out.println(e);
@@ -39,7 +44,8 @@ public class DB {
                 this.connection.close(); // Close the connection
                 this.connection = null; // Set connection to null to avoid reuse
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             System.out.println("Error closing the database connection: " + e.getMessage());
         }
     }

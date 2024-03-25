@@ -1,6 +1,8 @@
-package com.example.View;
+package com.example.Controller;
 
 import java.io.IOException;
+
+import com.example.View.App;
 
 import javafx.fxml.FXML;
 

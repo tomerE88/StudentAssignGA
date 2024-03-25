@@ -1,9 +1,7 @@
-package com.example.Controller;
+package com.example.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.example.Controller.MainGA;
 
 public class Individual {
 
@@ -64,20 +62,25 @@ public class Individual {
 
     // generate a random individual for the first population. add random students to the different classrooms
     public void generateRandomIndividual() {
+        int numOfStudents, classNum = 0;
         MainGA mainga = new MainGA();
         ArrayList<Student> students = new ArrayList<Student>(mainga.getStudents().values());
+        // number of students
+        numOfStudents = students.size();
 
         // select random students for the classroom !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the is not true because i loop for every random and for each one do it 10 times
-        for (int i = 0; i < students.size(); i++) {
-            // loops for all classrooms
-            for (int j = 0; j < classrooms.length; j++) {
-                int rand = (int) (Math.random() * (students.size()-1));
-                // add one student to each class at a time
-                this.classrooms[j].addStudent(students.get(rand));
-                // remove the student from the list
-                students.remove(rand);
-            }
+        for (int i = 0; i < numOfStudents; i++) {
+            int rand = (int) (Math.random() * (students.size()-1));
+            // if passed the last class, go back to first class
+            if (classNum == classrooms.length)
+                classNum = 0;
+            
+            // add the student to the classroom
+            this.classrooms[classNum++].addStudent(students.get(rand));
+            // remove the student from the list
+            students.remove(rand);
         }
+        System.out.println("******************end of random individual******************");
     }
 
     // get a classroom and an index and add it to the individual at the index

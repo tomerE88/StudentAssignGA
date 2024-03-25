@@ -1,12 +1,10 @@
-package com.example.Controller;
+package com.example.Model;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-
-import com.example.Controller.Database.DB;
 
 public class FitnessEvaluator {
 
@@ -151,13 +149,10 @@ public class FitnessEvaluator {
     }
 
     // return score of number of special request in same class from 0 to -100
-    private static double percentageSpecialRequestAssignments(ClassRoom[] classrooms) {
-        DB db = new DB();
+    private static double percentageSpecialRequestAssignments(ClassRoom[] classrooms, SpecialRequest[]specialRequests) {
         double totalSpecialRequests;
         double totalassignments = 0;
         double percentage = 0;
-         // array of student in class
-         SpecialRequest[] specialRequests = db.getAllSpecialRequests();
 
         totalSpecialRequests = specialRequests.length;
 
@@ -243,12 +238,6 @@ public class FitnessEvaluator {
             j++;
         }
 
-        // print length of classes
-        System.out.println("length: " + classrooms.length);
-        // print total code 2
-        System.out.println("totalcode2: " + totalcode2);
-        // print average
-        System.out.println("avgType2: " + avgType2);
         // less than max capacity of class
         varienceSum += Math.pow(totalcode2 - avgType2, 2);
 
@@ -278,12 +267,10 @@ public class FitnessEvaluator {
     }
 
     // return the score that this assignment get for students that have the required grades in their classes
-    private static double percentageRequiredGrade(ClassRoom[] classrooms) {
-        DB db = new DB();
+    private static double percentageRequiredGrade(ClassRoom[] classrooms, HashMap<Integer, Major> majors) {
         double totalAccepted = 0;
         double totalStudents = 0;
         double percentage = 0;
-        HashMap<Integer, Major> majors = db.getAllMajors();
 
         // loop through all the students and check if the student is above the minimum grade for the major's class
         for (int i = 0; i < classrooms.length; i++) {
@@ -304,22 +291,29 @@ public class FitnessEvaluator {
     }
 
     // Fitness function that calculates the fitness score of a given individual based on the weights of the different factors
-    public static double fitnessFunction(Student[] students, ClassRoom[] classrooms, int majorPrefRank, int friendsRank, int sameCityRank, int genderRank, int specialAssignRank, int studentTypeRank, int gradesRank) {
+    public static double fitnessFunction(Student[] students, ClassRoom[] classrooms, HashMap<Integer, Major> majors, SpecialRequest[] specialRequests, int majorPrefRank, int friendsRank, int sameCityRank, int genderRank, int specialAssignRank, int studentTypeRank, int gradesRank) {
+        int counter = 0;
+        for (int i = 0; i < classrooms.length; i++) {
+            counter += classrooms[i].getNumStudents();
+        }
+        
         double majorPrefScore = percentageMajorPreferenceScore(students, classrooms) * majorPrefRank;
         double friendsScore = percentageFriendsScore(students, classrooms) * friendsRank;
         double sameCityScore = percentageSameCity(students, classrooms) * sameCityRank;
         double genderScore = percentageGenderDifference(students, classrooms) * genderRank;
-        double specialAssignScore = percentageSpecialRequestAssignments(classrooms) * specialAssignRank;
+        double specialAssignScore = percentageSpecialRequestAssignments(classrooms, specialRequests) * specialAssignRank;
         double studentTypeScore = percentageStandardDeviationMerge(students, classrooms) * studentTypeRank;
-        double gradesScore = percentageRequiredGrade(classrooms) * gradesRank;
+        double gradesScore = percentageRequiredGrade(classrooms, majors) * gradesRank;
 
-        System.out.println("majorPrefScore: " + majorPrefScore);
-        System.out.println("friendsScore: " + friendsScore);
-        System.out.println("sameCityScore: " + sameCityScore);
-        System.out.println("genderScore: " + genderScore);
-        System.out.println("specialAssignScore: " + specialAssignScore);
-        System.out.println("studentTypeScore: " + studentTypeScore);
-        System.out.println("gradesScore: " + gradesScore);
+        System.out.println("number of studsents in all classrooms: " + counter);
+
+        // System.out.println("majorPrefScore: " + majorPrefScore);
+        // System.out.println("friendsScore: " + friendsScore);
+        // System.out.println("sameCityScore: " + sameCityScore);
+        // System.out.println("genderScore: " + genderScore);
+        // System.out.println("specialAssignScore: " + specialAssignScore);
+        // System.out.println("studentTypeScore: " + studentTypeScore);
+        // System.out.println("gradesScore: " + gradesScore);
 
         // Calculate the fitness as the sum of all weighted scores
         double fitness = majorPrefScore + friendsScore + sameCityScore + genderScore + specialAssignScore + studentTypeScore + gradesScore;

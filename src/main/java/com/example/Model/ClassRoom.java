@@ -1,4 +1,4 @@
-package com.example.Controller;
+package com.example.Model;
 
 import java.util.*;
 
@@ -88,7 +88,12 @@ public class ClassRoom {
 
     // Getter and setter for the students array
     public HashMap<String, Student> getStudents() {
-        return students;
+        return this.students;
+    }
+
+    // convert tyhe students to array and return array of students
+    public Student[] getStudentsArray() {
+        return this.students.values().toArray(new Student[0]);
     }
 
     public void setStudents(HashMap<String, Student> students) {
@@ -133,6 +138,15 @@ public class ClassRoom {
         return this.students.containsKey(studentID);
     }
 
+    // clears all students from this classroom
+    public void clearStudents() {
+        this.students.clear();
+    }
+
+    // add a student
+    public void addStudent(String studentId, Student student) {
+        this.students.put(studentId, student);
+    }
 
     // Method to display class room information
     @Override

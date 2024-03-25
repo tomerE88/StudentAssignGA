@@ -3,6 +3,6 @@ module com.example {
     requires javafx.fxml;
     requires java.sql;
 
-    opens com.example.View to javafx.fxml;
+    opens com.example.Controller to javafx.fxml;
     exports com.example.View;
 }
