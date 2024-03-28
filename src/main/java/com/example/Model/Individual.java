@@ -47,18 +47,18 @@ public class Individual {
         this.fitness = fitness;
     }
 
-    // gets studentID and returns the student
-    public Student getStudentByID(String studentID) {
-        // loop through all classrooms and get the student
-        for (ClassRoom classroom : this.classrooms) {
-            // check if the student is in the classroom
-            if (classroom.getStudents().containsKey(studentID)) {
-                return classroom.getStudents().get(studentID);
-            }
-        }
-        // if the student is not found return null
-        return null;
-    }
+    // // gets studentID and returns the student
+    // public Student getStudentByID(String studentID) {
+    //     // loop through all classrooms and get the student
+    //     for (ClassRoom classroom : this.classrooms) {
+    //         // check if the student is in the classroom
+    //         if (classroom.getStudents().containsKey(studentID)) {
+    //             return classroom.getStudents().get(studentID);
+    //         }
+    //     }
+    //     // if the student is not found return null
+    //     return null;
+    // }
 
     // generate a random individual for the first population. add random students to the different classrooms
     public void generateRandomIndividual() {
@@ -86,6 +86,19 @@ public class Individual {
     // get a classroom and an index and add it to the individual at the index
     public void addClassroom(ClassRoom classroom, int index) {
         this.classrooms[index] = classroom;
+    }
+
+    // checks if every classroom is full instead of given one
+    public boolean allClassesFull(ClassRoom excludedClassroom) {
+        for (ClassRoom classroom : classrooms) {
+            // Check if the current classroom is the excluded one by comparing memory addresses
+            // and if any classroom, except the excluded one, is not full, return false
+            if (classroom != excludedClassroom && !classroom.isFull()) {
+                return false;
+            }
+        }
+        // If all classrooms, except the excluded one, are full, return true
+        return true;
     }
 
     public static void main(String[] args) {

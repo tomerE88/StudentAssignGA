@@ -8,9 +8,10 @@ public class ClassRoom {
     private String className;
     private int maxStudents;
     private int minStudents;
-    private int majorID; // Major associated with the class
-    // list of all students in the class
-    private HashMap<String, Student> students;
+    // Major associated with the class
+    private int majorID;
+    // array list of all students in the class
+    private ArrayList<Student> students;
 
     // Constructor to initialize a new ClassRoom object
     public ClassRoom(int classID, String className, int maxStudents, int minStudents, int majorID) {
@@ -19,7 +20,7 @@ public class ClassRoom {
         this.maxStudents = maxStudents;
         this.minStudents = minStudents;
         this.majorID = majorID;
-        this.students = new HashMap<String, Student>();        
+        this.students = new ArrayList<Student>();        
     }
 
     public ClassRoom(ClassRoom other) {
@@ -28,7 +29,7 @@ public class ClassRoom {
         this.maxStudents = other.maxStudents;
         this.minStudents = other.minStudents;
         this.majorID = other.majorID;
-        this.students = new HashMap<String, Student>(other.students);
+        this.students = new ArrayList<Student>(other.getStudents());
     }
 
     // generate random classroom for first population
@@ -87,16 +88,16 @@ public class ClassRoom {
     }
 
     // Getter and setter for the students array
-    public HashMap<String, Student> getStudents() {
+    public ArrayList<Student> getStudents() {
         return this.students;
     }
 
-    // convert tyhe students to array and return array of students
-    public Student[] getStudentsArray() {
-        return this.students.values().toArray(new Student[0]);
-    }
+    // // convert tyhe students to array and return array of students
+    // public Student[] getStudentsArray() {
+    //     return this.students.values().toArray(new Student[0]);
+    // }
 
-    public void setStudents(HashMap<String, Student> students) {
+    public void setStudents(ArrayList<Student> students) {
         if (students.size() <= maxStudents) {
             this.students = students;
         } else {
@@ -109,7 +110,7 @@ public class ClassRoom {
     public void addStudent(Student student) {
         System.out.println("Adding student " + student.getStudentID() + " to class " + this.classID);
         if (this.students.size() < maxStudents) {
-            this.students.put(student.getStudentID(), student);
+            this.students.add(student);
         } else {
             // Handle the case of exceeding maximum capacity
             System.out.println("Error: Class is already at maximum capacity. Cannot add more students.");
@@ -122,20 +123,25 @@ public class ClassRoom {
     }
 
     // switch between two students
-    public void switchStudents(Student StudentIDRemove, Student StudentIDAdd) {
-        String studentIDRem = StudentIDRemove.getStudentID();
-        this.students.remove(studentIDRem);
-        this.students.put(StudentIDAdd.getStudentID(), StudentIDAdd);
+    public void switchStudents(Student StudentRemove, Student StudentAdd) {
+        // remove student from class
+        this.students.remove(StudentRemove);
+        // add the new student to the class
+        this.students.add(StudentAdd);
     }
 
     // checks if the student is in the class
     public boolean isStudentInClass(Student student) {
-        return this.students.containsKey(student.getStudentID());
+        return this.students.contains(student);
     }
 
     // checks if the studentID is in the class
     public boolean isStudentInClass(String studentID) {
-        return this.students.containsKey(studentID);
+        for (Student student : this.students) {
+            if (student.getStudentID().equals(studentID))
+                return true; // Student found
+        }
+        return false; // Student not found
     }
 
     // clears all students from this classroom
@@ -143,10 +149,16 @@ public class ClassRoom {
         this.students.clear();
     }
 
-    // add a student
-    public void addStudent(String studentId, Student student) {
-        this.students.put(studentId, student);
+    // get student from index
+    public Student getStudentFromIndex(int index) {
+        return this.students.get(index);
     }
+
+    // checks if the class if full
+    public boolean isFull() {
+        return getNumStudents() >= this.maxStudents;
+    }
+
 
     // Method to display class room information
     @Override

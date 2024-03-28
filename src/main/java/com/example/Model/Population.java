@@ -9,19 +9,17 @@ public class Population {
     // add population size
 
     // constructor that generate a random population
-    public Population(int populationSize) {
+    public Population(int populationSize, ClassRoom[] classrooms) {
         this.individuals = new ArrayList<Individual>(populationSize);
-        // add individuals to the array with their chromosome length
-        MainGA mainga = new MainGA();
 
         // loop through all the individuals in the population
         for (int i = 0; i < populationSize; i++) {
             // Create a new list for the classrooms that will be passed to the new individual
-            ClassRoom[] classroomsForIndividual = new ClassRoom[mainga.getClassrooms().length];
+            ClassRoom[] classroomsForIndividual = new ClassRoom[classrooms.length];
 
             // Populate the new array with copies of the ClassRoom instances
-            for (int j = 0; j < mainga.getClassrooms().length; j++) {
-                classroomsForIndividual[j] = new ClassRoom(mainga.getClassrooms()[j]); // Use the copy constructor
+            for (int j = 0; j < classrooms.length; j++) {
+                classroomsForIndividual[j] = new ClassRoom(classrooms[j]); // Use the copy constructor
             }
 
             Individual individual = new Individual(classroomsForIndividual);
@@ -88,5 +86,27 @@ public class Population {
                 return Double.compare(o2.getFitness(), o1.getFitness());
             }
         });
+    }
+
+    // return the individual with the best fitness function
+    public Individual getBestIndividual() {
+        if (this.individuals.isEmpty()) {
+            // If the population is empty, return null
+            return null;
+        }
+        
+        // Start with the first individual as the best candidate
+        Individual bestIndividual = this.individuals.get(0);
+        
+        // Iterate through the population to find the individual with the highest fitness
+        for (Individual individual : this.individuals) {
+            if (individual.getFitness() > bestIndividual.getFitness()) {
+                // If the current individual has a higher fitness, update bestIndividual
+                bestIndividual = individual;
+            }
+        }
+        
+        // Return the individual with the highest fitness
+        return bestIndividual;
     }
 }

@@ -116,7 +116,6 @@ public class DB {
         "    WHERE studentID = ?\n" +
         "    ORDER BY preference;");
         statement.setString(1, studID);
-        System.out.println("hello2");
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
             while (resultSet.next() && i<3) {
