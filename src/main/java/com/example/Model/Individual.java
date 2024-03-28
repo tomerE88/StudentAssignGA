@@ -1,7 +1,6 @@
 package com.example.Model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Individual {
 

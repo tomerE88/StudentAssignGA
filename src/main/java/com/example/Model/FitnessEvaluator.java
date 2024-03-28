@@ -1,15 +1,10 @@
 package com.example.Model;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
 public class FitnessEvaluator {
-
-    private Student[] students;
-    private ClassRoom[] classrooms;
 
     private static HashMap<String, ClassRoom> createStudentClassroomMap(ClassRoom[] classrooms) {
         // Create a mapping from student ID (String) to classroom

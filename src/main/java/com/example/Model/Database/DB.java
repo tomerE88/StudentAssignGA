@@ -3,8 +3,6 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.SSLException;
-
 import com.example.Model.ClassRoom;
 import com.example.Model.Major;
 import com.example.Model.SpecialRequest;

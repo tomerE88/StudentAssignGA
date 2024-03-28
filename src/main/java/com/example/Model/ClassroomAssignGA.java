@@ -1,12 +1,9 @@
 package com.example.Model;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 public class ClassroomAssignGA {
@@ -16,7 +13,7 @@ public class ClassroomAssignGA {
     private double mutationRate;
     private double crossoverRate;
     private int eliteCount;
-    public static int countGenerations ;
+    public static int countGenerations;
     private Population pop;
 
     // constructor
@@ -356,7 +353,7 @@ public class ClassroomAssignGA {
         System.out.println("best Ind: " + bestIndividual.getFitness());
 
         // increment the count of generations
-        this.countGenerations++;
+        ClassroomAssignGA.countGenerations++;
 
         // loops until the finishGeneration function returns false (reached max generations or max fitness)
         while (!finishGeneration(this.pop)) {
@@ -370,7 +367,7 @@ public class ClassroomAssignGA {
             System.out.println("Generation: " + countGenerations + " Average fitness: " + popAvg);
             System.out.println("***************************************************************");
             // increment the count of generations
-            this.countGenerations++;
+            ClassroomAssignGA.countGenerations++;
             bestIndividual = this.pop.getBestIndividual();
             System.out.println("best Ind: " + bestIndividual.getFitness());
         }
@@ -378,7 +375,6 @@ public class ClassroomAssignGA {
     }
 
     public static void main(String[] args) {
-        MainGA mainga = new MainGA();
         System.out.println("**************************************");
         ClassroomAssignGA classroomAssignGA = new ClassroomAssignGA(50, 50, 0.01, 0.9, 2);
         Individual bestIndividual = classroomAssignGA.evolutionCycle();

@@ -1,9 +1,5 @@
 package com.example.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.sql.*;
-
 public class Student {
     // Attributes of the Student class
     protected String studentID;

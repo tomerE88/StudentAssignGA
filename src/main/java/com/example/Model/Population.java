@@ -5,7 +5,7 @@ import java.util.*;
 public class Population {
     
     protected ArrayList<Individual> individuals; // array of single solutions
-    private double populationFitness = -1; // fitness of the population
+    // private double populationFitness = -1; // fitness of the population!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // add population size
 
     // constructor that generate a random population
