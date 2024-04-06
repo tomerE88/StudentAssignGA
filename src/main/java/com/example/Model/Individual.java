@@ -1,6 +1,8 @@
 package com.example.Model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Individual {
 
@@ -60,26 +62,39 @@ public class Individual {
     // }
 
     // generate a random individual for the first population. add random students to the different classrooms
-    public void generateRandomIndividual() {
+    public void generateRandomIndividual(List<Student> students) {
         int numOfStudents, classNum = 0;
-        MainGA mainga = new MainGA();
-        ArrayList<Student> students = new ArrayList<Student>(mainga.getStudents().values());
+        
+        List<Student> shuffledStudents = new ArrayList<>();
+        shuffledStudents = shuffleStudents(students);
+        
         // number of students
-        numOfStudents = students.size();
+        numOfStudents = shuffledStudents.size();
 
-        // select random students for the classroom !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! the is not true because i loop for every random and for each one do it 10 times
+        // select random students for the classroom
         for (int i = 0; i < numOfStudents; i++) {
-            int rand = (int) (Math.random() * (students.size()-1));
+            int rand = (int) (Math.random() * (shuffledStudents.size()-1));
             // if passed the last class, go back to first class
             if (classNum == classrooms.length)
                 classNum = 0;
             
             // add the student to the classroom
-            this.classrooms[classNum++].addStudent(students.get(rand));
-            // remove the student from the list
-            students.remove(rand);
+            boolean added = this.classrooms[classNum++].addStudent(shuffledStudents.get(rand));
+            // if student was added
+            if (added)
+                // remove the student from the list
+                shuffledStudents.remove(rand);
         }
         System.out.println("******************end of random individual******************");
+    }
+
+    public ArrayList<Student> shuffleStudents(List<Student> students) {
+        // Create a new ArrayList from the original list to avoid modifying it directly
+        ArrayList<Student> shuffledStudents = new ArrayList<>(students);
+        // Shuffle the new list
+        Collections.shuffle(shuffledStudents);
+        // Return the shuffled list
+        return shuffledStudents;
     }
 
     // get a classroom and an index and add it to the individual at the index
@@ -98,23 +113,6 @@ public class Individual {
         }
         // If all classrooms, except the excluded one, are full, return true
         return true;
-    }
-
-    public static void main(String[] args) {
-        MainGA mainga = new MainGA();
-        Individual individual = new Individual(mainga.getClassrooms());
-        System.out.println("**************************************");
-        individual.generateRandomIndividual();
-        System.out.println("**************************************");
-        System.out.println("Individual: " + individual.getClassroom(0).getStudents());
-
-
-        // // create evaluator and get values from individual
-        // FitnessEvaluator evaluator = new FitnessEvaluator(mainga.getStudents().values().toArray(new Student[0]), individual.getClassrooms());
-        // System.out.println("**************************************");
-        // System.out.println(evaluator.getStudents()[0].getMajorPreferences()[0] + " " + evaluator.getStudents()[0].getMajorPreferences()[1] + " " + evaluator.getStudents()[0].getMajorPreferences()[2]);
-        // double fitnessScore = evaluator.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
-        // System.out.println("Calculated fitness score: " + fitnessScore);
     }
 
 }

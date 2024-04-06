@@ -41,7 +41,7 @@
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
                <children>
-                  <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="Boys Girls" textAlignment="CENTER">
+                  <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="Gender equality" textAlignment="CENTER">
                      <font>
                         <Font name="Stencil" size="20.0" />
                      </font>
@@ -113,7 +113,7 @@
          <children>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
                <children>
-                  <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="Preferences" textAlignment="CENTER">
+                  <Label alignment="TOP_CENTER" prefHeight="35.0" prefWidth="342.0" text="major Preferences" textAlignment="CENTER">
                      <font>
                         <Font name="Stencil" size="20.0" />
                      </font>
@@ -133,7 +133,7 @@
             </VBox>
          </children>
       </HBox>
-      <Button id="switch to answerID" fx:id="goToPlacement" onAction="#handleGoToPlacementAction" prefHeight="69.0" prefWidth="298.0" text="go to secondary" />
+      <Button id="switch to answerID" fx:id="goToPlacement" onAction="#handleGoToPlacementAction" prefHeight="69.0" prefWidth="298.0" text="see placement" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

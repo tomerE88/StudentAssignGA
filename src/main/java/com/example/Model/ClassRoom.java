@@ -32,6 +32,15 @@ public class ClassRoom {
         this.students = new ArrayList<Student>(other.getStudents());
     }
 
+    public ClassRoom (ClassRoom other, boolean noClasses) {
+        this.classID = other.classID;
+        this.className = other.className;
+        this.maxStudents = other.maxStudents;
+        this.minStudents = other.minStudents;
+        this.majorID = other.majorID;
+        this.students = new ArrayList<Student>();
+    }
+
     // generate random classroom for first population
     public ClassRoom generateRandomClassroom(int i) {
         int classID = i;
@@ -41,7 +50,6 @@ public class ClassRoom {
         // int majorID = rand.nextInt(100);
         return new ClassRoom(classID, className, maxStudents, minStudents, majorID);
     }
-
 
     public int getMajorID() {
         return majorID;
@@ -107,14 +115,15 @@ public class ClassRoom {
     }
 
     // Method to add a single student to the class
-    public void addStudent(Student student) {
-        System.out.println("Adding student " + student.getStudentID() + " to class " + this.classID);
+    public boolean addStudent(Student student) {
+        // System.out.println("Adding student " + student.getStudentID() + " to class " + this.classID);
         if (this.students.size() < maxStudents) {
             this.students.add(student);
-        } else {
-            // Handle the case of exceeding maximum capacity
-            System.out.println("Error: Class is already at maximum capacity. Cannot add more students.");
-        }
+            return true;
+        } 
+        // Handle the case of exceeding maximum capacity
+        System.out.println("Error: Class is already at maximum capacity. Cannot add more students.");
+        return false;
     }
 
     // Method to get number of students in the class
@@ -157,6 +166,12 @@ public class ClassRoom {
     // checks if the class if full
     public boolean isFull() {
         return getNumStudents() >= this.maxStudents;
+    }
+
+    // Method to remove a student from the classroom
+    public void removeStudent(Student student) {
+        // Remove the student from the list
+        students.remove(student);
     }
 
 

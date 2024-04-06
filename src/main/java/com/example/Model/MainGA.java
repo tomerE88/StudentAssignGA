@@ -60,15 +60,13 @@ public class MainGA {
          this.students = this.db.getAllStudents();
          this.classrooms = this.db.getAllClassrooms();
          // for each student add their friends
+         // also for each student add their major preferences
          for (Student student : this.students.values()) {
              student.setFriends(this.db.getFriendsFromID(student.getStudentID()));
+             student.setMajorPreferences(this.db.getMajorPreferencesFromID(student.getStudentID()));
              counter++;
          }
          System.out.println("hello hello hello hello hello hello hello hello hello" + counter);
-         // for each student add their major preferences
-         for (Student student : this.students.values()) {
-             student.setMajorPreferences(this.db.getMajorPreferencesFromID(student.getStudentID()));
-         }
 
          this.majors = db.getAllMajors();
 

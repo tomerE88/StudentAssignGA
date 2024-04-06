@@ -6,6 +6,10 @@ import java.util.HashMap;
 
 public class FitnessEvaluator {
 
+    /*
+     * get array of classrooms and
+     * create a mapping from student ID to classroom
+     */
     private static HashMap<String, ClassRoom> createStudentClassroomMap(ClassRoom[] classrooms) {
         // Create a mapping from student ID (String) to classroom
         HashMap<String, ClassRoom> studentClassroomMap = new HashMap<>();
@@ -18,20 +22,21 @@ public class FitnessEvaluator {
         return studentClassroomMap;
     }
 
-    // calculate the score that this assignment get for major preference
-    // the number will be between 0 and 100 and will be calculated by the following formula:
-    // the (current score / max score) * 100
+    /*
+     calculate the score that this assignment get for major preference
+     the number will be between 0 and 100 and will be calculated by the following formula:
+     the (current score / max score) * 100
+    */
     private static double percentageMajorPreferenceScore(Student[] students, ClassRoom[] classrooms) {
         double maxScore = students.length * 3; // Max score calculation remains the same
         double currentScore = 0;
     
-        // Create a map from student ID to classroom
-        HashMap<String, ClassRoom> studentClassroomMap = createStudentClassroomMap(classrooms);
-    
-        // Calculate the score based on major preferences
-        for (Student student : students) {
-            ClassRoom classroom = studentClassroomMap.get(student.getStudentID());
-            if (classroom != null) { // Add null check here
+
+        // this is O(n) because if there are n students and m classes it loops for each
+        // class n/m students on average and for each student 3 preferences
+        // so its O(3m * (n / m)) = O(3n) ~ O(n)
+        for (ClassRoom classroom : classrooms) {
+            for (Student student : classroom.getStudents()) {
                 Major[] majorPreferences = student.getMajorPreferences();
                 boolean found = false; // Initialize found to false
     
@@ -48,7 +53,12 @@ public class FitnessEvaluator {
         return percentage;
     }
 
-    // return the score that this assignment get for friends
+    /*
+     * the number will be between 0 and 100 and will be calculated by the following formula:
+     * the (current score / max score) * 100
+     * the current score is the sum of the priority of the friends in the same class
+     * the max score is the number of students * 6 because each student has 3 friends (1 + 2 + 3 = 6)
+     */
     private static double percentageFriendsScore(Student[] students, ClassRoom[] classrooms) {
         double maxScore = students.length * 6; // Max score calculation remains the same
         double currentScore = 0;
@@ -78,16 +88,20 @@ public class FitnessEvaluator {
         return percentage;
     }
     
-    // return the score that this assignment get for same city
-    // checks if each student has at least one other student in same city as him in class
+    /*
+     * the number will be between 0 and 100 and will be calculated by the following formula:
+     * the (current score / total students) * 100
+     * the current score is the number of students with at least one classmate from the same city
+     * the total students is the number of students
+     */
     private static double percentageSameCity(Student[] students, ClassRoom[] classrooms) {
         double totalStudents = students.length; // Total students
         double sameCityCount = 0; // Counter for students with at least one classmate from the same city
+        // Hash map to count occurrences of each city ID
+        HashMap<Integer, Integer> cityCounts = new HashMap<>();
 
         // Iterate through each classroom
         for (ClassRoom classroom : classrooms) {
-            // Hash map to count occurrences of each city ID
-            HashMap<Integer, Integer> cityCounts = new HashMap<>();
             
             // Populate the map with city occurrences for the classroom
             for (Student student : classroom.getStudents()) {
@@ -100,11 +114,12 @@ public class FitnessEvaluator {
                     cityCounts.put(cityID, 1);
             }
 
-            // Count if there's more than one student from the same city
-            for (int count : cityCounts.values()) {
-                if (count > 1) {
-                    sameCityCount += count; // Add all students from cities with more than one student with them
-                }
+        }
+
+        // Count if there's more than one student from the same city
+        for (int count : cityCounts.values()) {
+            if (count > 1) {
+                sameCityCount += count; // Add all students from cities with more than one student with them
             }
         }
 
@@ -113,7 +128,12 @@ public class FitnessEvaluator {
         return percentage;
     }
 
-    // return the score from 0 to -100 that this assignment for difference between males and females in each class
+    /*
+     * the number will be between 0 and 100 and will be calculated by the following formula:
+     * the 100 - ((current score / total students) * 100)
+     * the current score is the difference between the number of boys and girls
+     * the total students is the number of students
+     */
     private static double percentageGenderDifference(Student[] students, ClassRoom[] classrooms) {
         double totalStudents = 0;
         double genderDifference = 0;
@@ -144,11 +164,16 @@ public class FitnessEvaluator {
         }
 
         // calculate the percentage
-        percentage = (genderDifference / totalStudents) * (-100);
+        percentage = (100 - (genderDifference / totalStudents) * 100);
         return percentage;
     }
 
-    // return score of number of special request in same class from 0 to -100
+    /*
+     * the number will be between 0 and 100 and will be calculated by the following formula:
+     * the 100 - ((current score / total special requests) * 100)
+     * the current score is the number of special requests that are in the same class
+     * the total special requests is the number of special requests
+     */
     private static double percentageSpecialRequestAssignments(ClassRoom[] classrooms, SpecialRequest[]specialRequests) {
         double totalSpecialRequests;
         double totalassignments = 0;
@@ -158,19 +183,24 @@ public class FitnessEvaluator {
 
         // loop through all the special requests and check if the students are in the same class
         for (int i = 0; i < specialRequests.length; i++) {
-            for (int j = 0; j < classrooms.length; j++) {
+            // stop the loop if the students are in the same class
+            boolean found = false;
+            for (int j = 0; j < classrooms.length && !found; j++) {
                 // checks if both students in the same class
                 if (classrooms[j].isStudentInClass(specialRequests[i].getStudentID1()) && classrooms[j].isStudentInClass(specialRequests[i].getStudentID2())) {
                     totalassignments++;
+                    found = true;
                 }
             }
         }
         // calculate the percentage
-        percentage = (totalassignments / totalSpecialRequests) * (-100);
+        percentage = 100 - ((totalassignments / totalSpecialRequests) * 100);
         return percentage;
     }
 
-    // calculate the standard deviation of the number of students with code type 2 in each class
+    /* 
+     * calculate the standard deviation of the number of students with code type 2 in each class
+     */
     private static double calculateStandardDeviationMerge(ClassRoom[] classrooms) {
         int totalcode2 = 0;
         int[] code2InClass = new int[classrooms.length];
@@ -203,8 +233,24 @@ public class FitnessEvaluator {
         return stddev;
     }
 
-    // calculate the max standard deviation of the number of students with code type 2 in each class
-    // the max standard deviation is if the students with code 2 are not divided equally between the classes
+    /*
+     * sort the classrooms from most students they can have to least students they can have
+     */
+    private static ClassRoom[] sortClassrooms(ClassRoom[] classrooms) {
+        // sort the classrooms by the max number of students they can have
+        Arrays.sort(classrooms, new Comparator<ClassRoom>() {
+            @Override
+            public int compare(ClassRoom c1, ClassRoom c2) {
+                return c2.getMaxStudents() - c1.getMaxStudents();
+            }
+        });
+        return classrooms;
+    }
+
+    /*
+     * calculate the max standard deviation of the number of students with code type 2 in each class 
+     * the max standard deviation is if the students with code 2 are not divided equally between the classes
+     */
     private static double maxStandardDeviationMerge(Student[] students, ClassRoom[] classrooms) {
         double totalcode2 = 0;
         double avgType2 = 0;
@@ -212,13 +258,8 @@ public class FitnessEvaluator {
         double maxstddev = 0;
         int j = 0;
 
-
-        // sort the classes by the max capacity
-        Arrays.sort(classrooms, new Comparator<ClassRoom>() {
-            public int compare(ClassRoom c1, ClassRoom c2) {
-                return Integer.compare(c2.getMaxStudents(), c1.getMaxStudents());
-            }
-        });
+        // sort the classrooms by the max number of students they can have
+        classrooms = sortClassrooms(classrooms);
 
         // total students with code type 2
         for (int i = 0; i < students.length; i++) {
@@ -247,8 +288,13 @@ public class FitnessEvaluator {
         return maxstddev;
     }
 
-    // checks if the students with codetype 2 divided between classes equaly
-    // return number between 0 and -100
+    /*
+     * the number will be between 0 and 100 and will be calculated by the following formula:
+     * the 100 - ((current score / max score) * 100)
+     * the current score is the standard deviation of the number of students with code type 2 in each class
+     * the max score is the max standard deviation of the number of students with code type 2 in each class
+     * the max standard deviation is if the students with code 2 are not divided equally between the classes
+     */
     private static double percentageStandardDeviationMerge(Student[] students, ClassRoom[] classrooms) {
         // calculate the standard deviation
         double stddev = calculateStandardDeviationMerge(classrooms);
@@ -262,7 +308,7 @@ public class FitnessEvaluator {
         }
 
         // calculate the percentage
-        percentage = (stddev / maxstddev) * (-100);
+        percentage = 100 - ((stddev / maxstddev) * 100);
         return percentage;
     }
 
@@ -290,35 +336,53 @@ public class FitnessEvaluator {
         return percentage;
     }
 
+    /*
+     * the max fitness is the sum of the max score of each factor
+     */
+    public static double getMaxFitness(int[] ranks) {
+        // return the max fitness
+        return 100;
+    }
+
     // Fitness function that calculates the fitness score of a given individual based on the weights of the different factors
-    public static double fitnessFunction(Student[] students, ClassRoom[] classrooms, HashMap<Integer, Major> majors, SpecialRequest[] specialRequests, int majorPrefRank, int friendsRank, int sameCityRank, int genderRank, int specialAssignRank, int studentTypeRank, int gradesRank) {
+    public static double fitnessFunction(Student[] students, ClassRoom[] classrooms, HashMap<Integer, Major> majors, SpecialRequest[] specialRequests, int[] ranks) {
         int counter = 0;
+        int sumRanks = 0;
+        for (int i = 0; i < ranks.length; i++) {
+            sumRanks += ranks[i];
+        }
         for (int i = 0; i < classrooms.length; i++) {
             counter += classrooms[i].getNumStudents();
         }
-        
+        // positive value
+        int majorPrefRank = ranks[0];
         double majorPrefScore = percentageMajorPreferenceScore(students, classrooms) * majorPrefRank;
+        // positive value
+        int friendsRank = ranks[1];
         double friendsScore = percentageFriendsScore(students, classrooms) * friendsRank;
+        // positive value
+        int sameCityRank = ranks[2];
         double sameCityScore = percentageSameCity(students, classrooms) * sameCityRank;
+        // negitive value
+        int genderRank = ranks[3];
         double genderScore = percentageGenderDifference(students, classrooms) * genderRank;
+        // negetive value
+        int specialAssignRank = ranks[4];
         double specialAssignScore = percentageSpecialRequestAssignments(classrooms, specialRequests) * specialAssignRank;
+        // negetive value
+        int studentTypeRank = ranks[5];
         double studentTypeScore = percentageStandardDeviationMerge(students, classrooms) * studentTypeRank;
+        // positive value
+        int gradesRank = ranks[6];
         double gradesScore = percentageRequiredGrade(classrooms, majors) * gradesRank;
 
         System.out.println("number of studsents in all classrooms: " + counter);
 
-        // System.out.println("majorPrefScore: " + majorPrefScore);
-        // System.out.println("friendsScore: " + friendsScore);
-        // System.out.println("sameCityScore: " + sameCityScore);
-        // System.out.println("genderScore: " + genderScore);
-        // System.out.println("specialAssignScore: " + specialAssignScore);
-        // System.out.println("studentTypeScore: " + studentTypeScore);
-        // System.out.println("gradesScore: " + gradesScore);
-
         // Calculate the fitness as the sum of all weighted scores
         double fitness = majorPrefScore + friendsScore + sameCityScore + genderScore + specialAssignScore + studentTypeScore + gradesScore;
 
-        return fitness;
+        // return a number between 0 and 100 as the fitness
+        return fitness / sumRanks;
     }
 }
 

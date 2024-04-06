@@ -17,13 +17,7 @@ public class App extends Application {
 
     @Override
     public void start(@SuppressWarnings("exports") Stage stage) throws IOException {
-        System.out.println("hi");
-        System.out.println("hi");
-        System.out.println("hi");
-        System.out.println("hi");
-        System.out.println("hi");
-        System.out.println("hi");
-        scene = new Scene(loadFXML("questionnaire"), 640, 480);
+        scene = new Scene(loadFXML("questionnaire"), 640, 600);
         stage.setScene(scene);
         stage.show();
     }

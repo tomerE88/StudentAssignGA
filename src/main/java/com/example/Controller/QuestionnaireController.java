@@ -3,36 +3,68 @@ package com.example.Controller;
 import java.io.IOException;
 
 import javafx.fxml.FXML;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import java.util.stream.IntStream;
 
+import com.example.Model.ClassroomAssignGA;
+import com.example.Model.Individual;
 import com.example.View.App;
 
 
 public class QuestionnaireController {
 
-    @FXML
-    private ChoiceBox<Integer> Friends;
+    public enum Priority {
+        NO_PRIORITY("(0) no priority", 0),
+        VERY_LOW_PRIORITY("(1) very low priority", 1),
+        LOW_PRIORITY("(2) low priority", 2),
+        MEDIUM_PRIORITY("(3) medium priority", 3),
+        HIGH_PRIORITY("(4) high priority", 4),
+        VERY_HIGH_PRIORITY("(5) very high priority", 5);
+
+        private final String description;
+        private final int value;
+
+        Priority(String description, int value) {
+            this.description = description;
+            this.value = value;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public int getValue() {
+            return value;
+        }
+        
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
 
     @FXML
-    private ChoiceBox<Integer> equality;
+    private ChoiceBox<Priority> Friends;
 
     @FXML
-    private ChoiceBox<Integer> preferences;
+    private ChoiceBox<Priority> equality;
 
     @FXML
-    private ChoiceBox<Integer> sameCity;
+    private ChoiceBox<Priority> preferences;
 
     @FXML
-    private ChoiceBox<Integer> specialOccasions;
+    private ChoiceBox<Priority> sameCity;
 
     @FXML
-    private ChoiceBox<Integer> grades;
+    private ChoiceBox<Priority> specialOccasions;
 
     @FXML
-    private ChoiceBox<Integer> studentType;
+    private ChoiceBox<Priority> grades;
+
+    @FXML
+    private ChoiceBox<Priority> studentType;
 
     @FXML
     private Button goToPlacement;
@@ -46,43 +78,64 @@ public class QuestionnaireController {
     private int specialOccasionsRating;
     private int gradesRating;
     private int studentTypeRating;
+    // ranks will store all ratings
+    private int ranks[];
 
+    /*
+     * This method is called when the QuestionnaireController is created
+     * It will initialize the ChoiceBoxes with the options 0-5
+     */
     @FXML
     private void initialize() {
 
-        // Add option 1-5 to Friends ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(Friends.getItems()::add);
+        // Add option 0-5 to Friends ChoiceBox as the strings
+        Friends.getItems().addAll(Priority.values());
+        
+         // Add option 0-5 to equality ChoiceBox as the strings
+         equality.getItems().addAll(Priority.values());
 
-        // Add option 1-5 to equality ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(equality.getItems()::add);
+        // Add option 0-5 to preferences ChoiceBox as the strings
+        preferences.getItems().addAll(Priority.values());
 
-        // Add option 1-5 to preferences ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(preferences.getItems()::add);
+         // Add option 0-5 to sameCity ChoiceBox as the strings
+         sameCity.getItems().addAll(Priority.values());
 
-        // Add option 1-5 to sameCity ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(sameCity.getItems()::add);
+        // Add option 0-5 to specialOccasions ChoiceBox as the strings
+        specialOccasions.getItems().addAll(Priority.values());
 
-        // Add option 1-5 to Friends ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(specialOccasions.getItems()::add);
+         // Add option 0-5 to studentType ChoiceBox as the strings
+         studentType.getItems().addAll(Priority.values());
 
-        // Add option 1-5 to studentType ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(studentType.getItems()::add);
+        // Add option 0-5 to grades ChoiceBox as the strings
+        grades.getItems().addAll(Priority.values());
 
-        // Add option 1-5 to grades ChoiceBox
-        IntStream.rangeClosed(1, 5).forEach(grades.getItems()::add);
+        // initialize array
+        ranks = new int[7];
     }
 
+    /*
+     * This method is called when the user clicks the "see placement" button
+     * It will save the user's choices as numbers and switch to the secondary view
+     */
     @FXML
     private void handleGoToPlacementAction(ActionEvent event) throws IOException {
         try {
-        // Save the user's choices
-        friendsRating = Friends.getValue();
-        genderRating = equality.getValue();
-        preferencesRating = preferences.getValue();
-        sameCityRating = sameCity.getValue();
-        specialOccasionsRating = specialOccasions.getValue();
-        gradesRating = grades.getValue();
-        studentTypeRating = studentType.getValue();
+        // Save the user's choices as numbers
+        preferencesRating = preferences.getValue().getValue();
+        friendsRating = Friends.getValue().getValue();
+        sameCityRating = sameCity.getValue().getValue();
+        genderRating = equality.getValue().getValue();     
+        specialOccasionsRating = specialOccasions.getValue().getValue();
+        studentTypeRating = studentType.getValue().getValue();
+        gradesRating = grades.getValue().getValue();
+
+        ranks[0] = preferencesRating;
+        ranks[1] = friendsRating;
+        ranks[2] = sameCityRating;
+        ranks[3] = genderRating;
+        ranks[4] = specialOccasionsRating;
+        ranks[5] = studentTypeRating;
+        ranks[6] = gradesRating;
 
 
         // Now you can use these variables as needed before switching views
@@ -102,11 +155,78 @@ public class QuestionnaireController {
         }
     }
 
-
+    // switch to waiting screen
     @FXML
-    // switch to secondary GUI
-    private void switchToSecondary() throws IOException {
-        App.setRoot("secondary");
+    private void switchToWaiting() throws IOException {
+        App.setRoot("waiting");
+    }
+
+    // // switch to secondary GUI
+    // @FXML
+    // private void switchToSecondary() throws IOException {
+    //     // create instance of the genetic algorithm
+    //     ClassroomAssignGA cag = new ClassroomAssignGA(100, 500, 0.05, 0.7, 0.1);
+    //     // set the ranks
+    //     cag.setRanks(ranks);
+    //     // get the best individual
+    //     Individual bestIndividual = cag.evolutionCycle();
+    //     // Set the best individual before switching
+    //     SecondaryController.setBestIndividual(bestIndividual);
+    //     SecondaryController.setMajors(cag.getMajors());
+    //     System.out.println("The best individual is: " + bestIndividual.getFitness());
+    //     // open the secondary GUI
+    //     App.setRoot("secondary");
+    // }
+
+    // switch to waiting GUI and run the algorithm in the background
+    @FXML
+    private void switchToSecondary() {
+        // Display the waiting screen
+        try {
+            App.setRoot("waitingScreen");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        // create instance of the genetic algorithm
+        ClassroomAssignGA cag = new ClassroomAssignGA(100, 500, 0.05, 0.7, 0.1);
+
+        // Create a Task for the genetic algorithm to run in the background
+        Task<Individual> task = new Task<Individual>() {
+            @Override
+            protected Individual call() throws Exception {
+                cag.setRanks(ranks);
+                return cag.evolutionCycle();
+            }
+        };
+        
+        // When the task is successfully completed, update the UI with the best individual
+        task.setOnSucceeded(event -> {
+            Individual bestIndividual = task.getValue();
+            SecondaryController.setBestIndividual(bestIndividual);
+            SecondaryController.setMajors(cag.getMajors());
+            System.out.println("The best individual is: " + bestIndividual.getFitness());
+            
+            // Switch to the secondary view
+            try {
+                App.setRoot("secondary");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        
+        // Handle failed case
+        task.setOnFailed(event -> {
+            Throwable e = task.getException();
+            System.err.println("Error during genetic algorithm execution: " + e.getMessage());
+            e.printStackTrace();
+            // You can also show an error message to the user here
+        });
+        
+        // Run the task in a background thread
+        Thread thread = new Thread(task);
+        thread.start();
     }
 
 }

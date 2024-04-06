@@ -9,8 +9,9 @@ public class Population {
     // add population size
 
     // constructor that generate a random population
-    public Population(int populationSize, ClassRoom[] classrooms) {
+    public Population(int populationSize, ClassRoom[] classrooms, Collection<Student> students) {
         this.individuals = new ArrayList<Individual>(populationSize);
+        ArrayList<Student> studentsList = new ArrayList<>(students);
 
         // loop through all the individuals in the population
         for (int i = 0; i < populationSize; i++) {
@@ -24,14 +25,14 @@ public class Population {
 
             Individual individual = new Individual(classroomsForIndividual);
             // generate a random individual
-            individual.generateRandomIndividual();
+            individual.generateRandomIndividual(studentsList);
             // add the individual to the population
             this.individuals.add(individual);
         }
     }
 
     // New constructor for an empty population
-    public Population(boolean createEmptyPopulation) {
+    public Population() {
         this.individuals = new ArrayList<>();
     }
 
@@ -56,8 +57,8 @@ public class Population {
     }
 
     // get rundom individual from array
-    public Individual getIndividual(int randomIndex) {
-        return this.individuals.get(randomIndex);
+    public Individual getIndividual(int index) {
+        return this.individuals.get(index);
     }
 
     // return the number of individuals in a population
