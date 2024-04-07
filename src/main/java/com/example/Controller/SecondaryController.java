@@ -79,5 +79,14 @@ public class SecondaryController {
     private void switchToPrimary() throws IOException {
         App.setRoot("questionnaire");
     }
+
+    /*
+     * set classes to all students
+     */
+    @FXML
+    private void setInDB() throws IOException {
+        bestIndividual.setClassroomsInDB();
+        App.setRoot("setInDB");
+    }
 }
 

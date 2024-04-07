@@ -391,28 +391,91 @@ public class DB {
         return null; // no class with this ID
     }
 
-
-
-
-    public static void main(String[] args) {
-
+    /*
+     * set the classroomID for a student in the database
+     */
+    public void setClassroomIDForStudent(String studentID, int classroomID) {
         try {
-
-            DB db = new DB();
-            // make a student out of studentID 100000002 and print all ID's of students in same city as him
-            Student stud;
-            double fitness = db.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
-            stud = db.getStudentFromID("100000002");
-            System.out.println("*****************************");
-            System.out.println("gerso");
-            System.out.println(stud.getName());
-            System.out.println("fitness: " + fitness);
-            System.out.println("*****************************");
-    
-                db.disconnectSql();
+            // create a statement
+            // the query that updates the classroomID for a student
+            PreparedStatement statement = this.connection.prepareStatement("UPDATE students\n" +
+            "SET classroomID = ?\n" +
+            "WHERE studentID = ?;");
+            statement.setInt(1, classroomID);
+            statement.setString(2, studentID);
+            statement.executeUpdate();
         }
         catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    /*
+     * get array of classrooms and
+     * create a mapping from student ID to classroom
+     */
+    private static HashMap<String, Integer> createStudentClassroomMap(ClassRoom[] classrooms) {
+        // Create a mapping from student ID (String) to classroom
+        HashMap<String, Integer> studentClassroomMap = new HashMap<>();
+        // add the students and their classrooms to the map
+        for (ClassRoom classroom : classrooms) {
+            for (Student student : classroom.getStudents()) {
+                studentClassroomMap.put(student.getStudentID(), classroom.getClassID());
+            }
         }
+        return studentClassroomMap;
+    }
+
+    /*
+     * set the classroomID for each student in the database
+     */
+    public void setClassroomIDForAllStudents(ClassRoom[] classrooms) {
+        try {
+            // create a statement
+            // the query that gets all the students sorted by their ID
+            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM students\n" +
+            "ORDER BY studentID;");
+
+            // create a mapping from student ID (String) to classroom ID (Integer)
+            HashMap<String, Integer> studentClassroomMap = createStudentClassroomMap(classrooms);
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                // studentID
+                String studentID = resultSet.getString("studentID");
+                // classroomID
+                int classroomID = studentClassroomMap.get(studentID);
+                // for each student, set the classroomID
+                setClassroomIDForStudent(resultSet.getString("studentID"), classroomID);
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+
+
+
+    // public static void main(String[] args) {
+
+    //     try {
+
+    //         DB db = new DB();
+    //         // make a student out of studentID 100000002 and print all ID's of students in same city as him
+    //         Student stud;
+    //         double fitness = db.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
+    //         stud = db.getStudentFromID("100000002");
+    //         System.out.println("*****************************");
+    //         System.out.println("gerso");
+    //         System.out.println(stud.getName());
+    //         System.out.println("fitness: " + fitness);
+    //         System.out.println("*****************************");
+    
+    //             db.disconnectSql();
+    //     }
+    //     catch (Exception e) {
+    //         System.out.println(e);
+    //     }
+    //     }
 }

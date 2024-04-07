@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.example.Model.Database.DB;
+
 public class Individual {
 
     private ClassRoom[] classrooms;
@@ -113,6 +115,18 @@ public class Individual {
         }
         // If all classrooms, except the excluded one, are full, return true
         return true;
+    }
+
+    /*
+     * set classes to all students in the DB
+     */
+    public void setClassroomsInDB() {
+         // DB instance
+         DB db = new DB();
+         // set the classes to the students
+         db.setClassroomIDForAllStudents(this.classrooms);
+         // close the connection
+         db.disconnectSql();
     }
 
 }

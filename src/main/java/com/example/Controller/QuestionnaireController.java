@@ -161,23 +161,6 @@ public class QuestionnaireController {
         App.setRoot("waiting");
     }
 
-    // // switch to secondary GUI
-    // @FXML
-    // private void switchToSecondary() throws IOException {
-    //     // create instance of the genetic algorithm
-    //     ClassroomAssignGA cag = new ClassroomAssignGA(100, 500, 0.05, 0.7, 0.1);
-    //     // set the ranks
-    //     cag.setRanks(ranks);
-    //     // get the best individual
-    //     Individual bestIndividual = cag.evolutionCycle();
-    //     // Set the best individual before switching
-    //     SecondaryController.setBestIndividual(bestIndividual);
-    //     SecondaryController.setMajors(cag.getMajors());
-    //     System.out.println("The best individual is: " + bestIndividual.getFitness());
-    //     // open the secondary GUI
-    //     App.setRoot("secondary");
-    // }
-
     // switch to waiting GUI and run the algorithm in the background
     @FXML
     private void switchToSecondary() {
@@ -190,7 +173,7 @@ public class QuestionnaireController {
         }
 
         // create instance of the genetic algorithm
-        ClassroomAssignGA cag = new ClassroomAssignGA(100, 500, 0.05, 0.7, 0.1);
+        ClassroomAssignGA cag = new ClassroomAssignGA(100, 100, 0.05, 0.7, 0.1);
 
         // Create a Task for the genetic algorithm to run in the background
         Task<Individual> task = new Task<Individual>() {

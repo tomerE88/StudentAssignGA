@@ -181,16 +181,14 @@ public class FitnessEvaluator {
 
         totalSpecialRequests = specialRequests.length;
 
+        // Create a mapping from student ID to classroom
+        HashMap<String, ClassRoom> studentClassroomMap = createStudentClassroomMap(classrooms);
+
         // loop through all the special requests and check if the students are in the same class
         for (int i = 0; i < specialRequests.length; i++) {
-            // stop the loop if the students are in the same class
-            boolean found = false;
-            for (int j = 0; j < classrooms.length && !found; j++) {
-                // checks if both students in the same class
-                if (classrooms[j].isStudentInClass(specialRequests[i].getStudentID1()) && classrooms[j].isStudentInClass(specialRequests[i].getStudentID2())) {
-                    totalassignments++;
-                    found = true;
-                }
+            // check if both students in the same class
+            if (studentClassroomMap.get(specialRequests[i].getStudentID1()).equals(studentClassroomMap.get(specialRequests[i].getStudentID2()))) {
+                totalassignments++;
             }
         }
         // calculate the percentage
@@ -375,6 +373,15 @@ public class FitnessEvaluator {
         // positive value
         int gradesRank = ranks[6];
         double gradesScore = percentageRequiredGrade(classrooms, majors) * gradesRank;
+
+        // // print all scores
+        // System.out.println("major preference score: " + majorPrefScore);
+        // System.out.println("friends score: " + friendsScore);
+        // System.out.println("same city score: " + sameCityScore);
+        // System.out.println("gender score: " + genderScore);
+        // System.out.println("special assignment score: " + specialAssignScore);
+        // System.out.println("student type score: " + studentTypeScore);
+        // System.out.println("grades score: " + gradesScore);
 
         System.out.println("number of studsents in all classrooms: " + counter);
 
