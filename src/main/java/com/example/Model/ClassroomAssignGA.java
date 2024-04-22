@@ -97,7 +97,7 @@ public class ClassroomAssignGA {
 
         System.out.println("Start of generation: " + countGenerations);
 
-        // order the population by fitness
+        // order the population by fitness (best fitness is last)
         this.pop.orderByFitness();
 
         double cumulativeProportions[] = createRouletteWheel();
@@ -125,32 +125,47 @@ public class ClassroomAssignGA {
             // increment the index by 2
             index += 2;
         }
-        // reset the index
-        index = 0;
+        // use to count the elite individuals
+        int counter = 0;
 
         // add 10% of the population as elite
-        while (index < popSize * this.eliteCount) {
-            // System.out.println("elite loop: " + index);
-            newIndividual1 = this.pop.getIndividual(index);
+        while (counter < popSize * this.eliteCount) {
+            newIndividual1 = this.pop.getIndividual(pop.populationSize() - 1);
             // add the elite individuals to the new population
             newPopulation.individuals.add(newIndividual1);
-            // remove the elite individuals from the old population
-            this.pop.individuals.remove(index);
+
+            // remove in O(1)
+            // remove the individual from the population
+            pop.individuals.remove(pop.populationSize() - 1);
+
             // increment the index
-            index++;
-        } 
+            index--;
+            counter++;
+        }
+
+        int selectedIndividualIndex;
         
         // add the rest of the population to the new population with selection
         while (newPopulation.populationSize() < popSize) {
             // System.out.println("rest loop: " + newPopulation.populationSize());
             if (this.pop.individuals.size() < 2)
-                newIndividual1 = this.pop.getIndividual(0);
+                selectedIndividualIndex = 0;
+                // newIndividual1 = this.pop.getIndividual(0);
             else
-                // get a new individual from the roulette wheel
-                newIndividual1 = tournamentSelection();
+                // get a new individual from the tournament wheel
+                selectedIndividualIndex = tournamentSelection();
             
-            // remove the new individual from the old population
-            this.pop.individuals.remove(newIndividual1);
+            // get the individual from the index 
+            newIndividual1 = this.pop.getIndividual(selectedIndividualIndex);
+
+            // remove in O(1)
+            // switch the places of the individual with the last individual in the population
+            pop.switchIndividuals(selectedIndividualIndex);
+            // remove the individual from the population
+            pop.individuals.remove(pop.populationSize() - 1);
+            
+            // // remove the new individual from the old population
+            // this.pop.individuals.remove(newIndividual1);
             // mutate the new individual
             if (Math.random() < mutationRate) {
                 mutation(newIndividual1);
@@ -163,29 +178,28 @@ public class ClassroomAssignGA {
     }
 
     // fuction that selects the best individuals from the population. gets five random individuals and returns the best one
-    public Individual tournamentSelection() {
+    public int tournamentSelection() {
         int candidatesSize = 5;
         // list of random individuals
         ArrayList<Individual> candidates = new ArrayList<Individual>();
 
-        // get random individual and set as best individual
-        Individual bestCandidate = getRandomIndividual();
+        // get random individual index and set as best individual
+        int bestIndex = getRandomIndividualIndex();
         // add to array list
-        candidates.add(bestCandidate);
+        candidates.add(this.pop.getIndividual(bestIndex));
 
         // iterates number of needed times
         for (int i = 1; i < candidatesSize; i++) {
-            // get random individual
-            Individual candidate = getRandomIndividual();
-            // loops until found new individual
-            while (!candidates.contains(candidate))
-                candidate = getRandomIndividual();
-            if (candidate.getFitness() > bestCandidate.getFitness())
-            bestCandidate = candidate;
-            // add the individual to the arraylist
-            candidates.add(candidate);
+            int randomIndex = getRandomIndividualIndex();
+            while (candidates.contains(this.pop.getIndividual(randomIndex))) {
+                randomIndex = getRandomIndividualIndex();
+            }
+            if (this.pop.getIndividual(randomIndex).getFitness() > this.pop.getIndividual(bestIndex).getFitness())
+                bestIndex = randomIndex;
+            // add to array list
+            candidates.add(this.pop.getIndividual(randomIndex));
         }
-        return bestCandidate;
+        return bestIndex;
     }
 
     /*
@@ -217,6 +231,7 @@ public class ClassroomAssignGA {
     
     /*
      * gets the cumulative proporrtions from createRouletteWheel
+     * and remove the selected individual from the population
      * and return a random individual out of the roulette
      */
     public Individual rouletteSelection(double[] cumulativeProportions) {
@@ -228,6 +243,7 @@ public class ClassroomAssignGA {
         for (int i = 0; i < pop.populationSize(); i++) {
             // if the random number is less than the cumulative proportion of the individual
             if (random < cumulativeProportions[i]) {
+                // return the individual
                 return this.pop.getIndividual(i);
             }
         }
@@ -235,12 +251,20 @@ public class ClassroomAssignGA {
         return null;
     }
     
+    // /*
+    //  * return random individual
+    //  */
+    // private Individual getRandomIndividual() {
+    //     int randomIndex = (int) (Math.random() * pop.populationSize()); // Generate a random index within the population size
+    //     return this.pop.getIndividual(randomIndex);
+    // }
+
     /*
-     * return random individual
+     * return random individual index
      */
-    private Individual getRandomIndividual() {
+    private int getRandomIndividualIndex() {
         int randomIndex = (int) (Math.random() * pop.populationSize()); // Generate a random index within the population size
-        return this.pop.getIndividual(randomIndex);
+        return randomIndex;
     }
 
     /*
@@ -257,42 +281,42 @@ public class ClassroomAssignGA {
         return (checkMaxGen || checkMaxFitness); // return true if at least one of the criterias are met
     }
 
-    // procedure that add a mutation to the population - 
-    // gets one of the individual answers and make a random change in it
-    private void mutation(Individual individual) {
-        // random number between 0 and length of the individual.classrooms - 1
-        int randClass = (int) (Math.random() * individual.getClassroomsLength());
-        // get the classroom
-        ClassRoom class1 = individual.getClassroom(randClass);
-        // get a random student from class
-        int randStud1 = (int) (Math.random() * class1.getNumStudents());
-        // get the student
-        Student stud1 = class1.getStudentFromIndex(randStud1);
+    // // procedure that add a mutation to the population - 
+    // // gets one of the individual answers and make a random change in it
+    // private void mutation(Individual individual) {
+    //     // random number between 0 and length of the individual.classrooms - 1
+    //     int randClass = (int) (Math.random() * individual.getClassroomsLength());
+    //     // get the classroom
+    //     ClassRoom class1 = individual.getClassroom(randClass);
+    //     // get a random student from class
+    //     int randStud1 = (int) (Math.random() * class1.getNumStudents());
+    //     // get the student
+    //     Student stud1 = class1.getStudentFromIndex(randStud1);
 
-        // random number between 0 and length of the individual.classrooms - 1
-        int randNewClass = (int) (Math.random() * individual.getClassroomsLength());
-        // get the classroom
-        ClassRoom newClass = individual.getClassroom(randNewClass);
+    //     // random number between 0 and length of the individual.classrooms - 1
+    //     int randNewClass = (int) (Math.random() * individual.getClassroomsLength());
+    //     // get the classroom
+    //     ClassRoom newClass = individual.getClassroom(randNewClass);
 
-        // check if every other class already full
-        if (!individual.allClassesFull(class1)) {
-            // while the classes are not the same and we can insert to another class
-            while (newClass == class1 && newClass.getNumStudents() > newClass.getMaxStudents()) {
-                // random number between 0 and length of the individual.classrooms - 1
-                randNewClass = (int) (Math.random() * individual.getClassroomsLength());
-                // get the classroom
-                newClass = individual.getClassroom(randNewClass);
-            }
-            // delete student from previous class
-            class1.removeStudent(stud1);
-            // insert student to new class
-            newClass.addStudent(stud1);
+    //     // check if every other class already full
+    //     if (!individual.allClassesFull(class1)) {
+    //         // while the classes are not the same and we can insert to another class
+    //         while (newClass == class1 && newClass.getNumStudents() > newClass.getMaxStudents()) {
+    //             // random number between 0 and length of the individual.classrooms - 1
+    //             randNewClass = (int) (Math.random() * individual.getClassroomsLength());
+    //             // get the classroom
+    //             newClass = individual.getClassroom(randNewClass);
+    //         }
+    //         // delete student from previous class
+    //         class1.removeStudent(stud1);
+    //         // insert student to new class
+    //         newClass.addStudent(stud1);
             
-        }
+    //     }
         
-    }
+    // }
 
-    public void mutationSwitch(Individual individual) {
+    public void mutation(Individual individual) {
         // random number between 0 and length of the individual.classrooms - 1
         int randClass1 = (int) (Math.random() * individual.getClassroomsLength());
         int randClass2;
@@ -315,8 +339,8 @@ public class ClassroomAssignGA {
         Student stud2 = class2.getStudentFromIndex(randStud2);
 
         // switch between the students
-        class1.switchStudents(stud1, stud2);
-        class2.switchStudents(stud2, stud1);
+        class1.switchStudents(randStud1, stud1, stud2);
+        class2.switchStudents(randStud2, stud2, stud1);
 
     }
 
@@ -340,7 +364,7 @@ public class ClassroomAssignGA {
         for (int i = 0; i <= crossoverPoint; i++) {
             offspringClassrooms[i] = new ClassRoom(parent1.getClassroom(i));
             // Add students to the set of assigned students
-            assignedStudents.addAll(parent1.getClassroom(i).getStudents());
+            assignedStudents.addAll(parent1.getClassroom(i).getStudents().values());
         }
 
         //students from parent2, maintaining their order
@@ -348,7 +372,7 @@ public class ClassroomAssignGA {
 
         // Gather all students from parent2, maintaining the order they appear from start to crossover point
         for (int i = 0; i <= crossoverPoint; i++) {
-            for (Student student : parent2.getClassroom(i).getStudents()) {
+            for (Student student : parent2.getClassroom(i).getStudents().values()) {
                 // add to students order if student is not already assigned
                 if (!assignedStudents.contains(student)) {
                     studentsOrder.add(student);
@@ -429,7 +453,7 @@ public class ClassroomAssignGA {
         for (int i = 0; i <= crossoverPoint; i++) {
             offspringClassrooms[i] = new ClassRoom(parent1.getClassroom(i));
             // Add students to the set of assigned students
-            assignedStudents.addAll(parent1.getClassroom(i).getStudents());
+            assignedStudents.addAll(parent1.getClassroom(i).getStudents().values());
         }
     
         // Prepare to track students from parent2, maintaining their order
@@ -437,7 +461,7 @@ public class ClassroomAssignGA {
     
         // Gather all students from parent2, maintaining the order they appear
         for (ClassRoom classroom : parent2.getClassrooms()) {
-            for (Student student : classroom.getStudents()) {
+            for (Student student : classroom.getStudents().values()) {
                 if (!assignedStudents.contains(student)) {
                     studentsOrder.add(student);
                 }
@@ -454,7 +478,8 @@ public class ClassroomAssignGA {
             // Iterate over studentsOrder to add students until the classroom reaches its original size
             while (offspringClassrooms[i].getNumStudents() < parent1.getClassroom(i).getNumStudents() && studentOrderIndex < studentsOrder.size()) {
                 Student student = studentsOrder.get(studentOrderIndex++);
-                offspringClassrooms[i].getStudents().add(student);
+                // Add the student to the classroom
+                offspringClassrooms[i].addStudent(student);
                 assignedStudents.add(student);
             }
         }

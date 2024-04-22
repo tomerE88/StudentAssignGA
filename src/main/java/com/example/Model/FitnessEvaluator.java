@@ -15,7 +15,7 @@ public class FitnessEvaluator {
         HashMap<String, ClassRoom> studentClassroomMap = new HashMap<>();
         // add the students and their classrooms to the map
         for (ClassRoom classroom : classrooms) {
-            for (Student student : classroom.getStudents()) {
+            for (Student student : classroom.getStudents().values()) {
                 studentClassroomMap.put(student.getStudentID(), classroom);
             }
         }
@@ -36,7 +36,7 @@ public class FitnessEvaluator {
         // class n/m students on average and for each student 3 preferences
         // so its O(3m * (n / m)) = O(3n) ~ O(n)
         for (ClassRoom classroom : classrooms) {
-            for (Student student : classroom.getStudents()) {
+            for (Student student : classroom.getStudents().values()) {
                 Major[] majorPreferences = student.getMajorPreferences();
                 boolean found = false; // Initialize found to false
     
@@ -104,7 +104,7 @@ public class FitnessEvaluator {
         for (ClassRoom classroom : classrooms) {
             
             // Populate the map with city occurrences for the classroom
-            for (Student student : classroom.getStudents()) {
+            for (Student student : classroom.getStudents().values()) {
                 int cityID = student.getCityID();
                 if (cityCounts.containsKey(cityID))
                     // If the cityID already exists in the map, increment its count by 1
@@ -142,7 +142,7 @@ public class FitnessEvaluator {
         double percentage = 0;
         String gender;
         // array of student in class
-        Student[] studentsInClass;
+        HashMap<Integer, Student> studentsInClass;
 
         totalStudents = students.length;
 
@@ -150,9 +150,9 @@ public class FitnessEvaluator {
         for (int i = 0; i < classrooms.length; i++) {
             maleCount = 0;
             femaleCount = 0;
-            studentsInClass = classrooms[i].getStudents().toArray(new Student[0]);
-            for (int j = 0; j < studentsInClass.length; j++) {
-                gender = studentsInClass[j].getGender();
+            studentsInClass = classrooms[i].getStudents();
+            for (int j = 0; j < studentsInClass.size(); j++) {
+                gender = studentsInClass.get(j).getGender();
                 // check the gender of the student
                 if (gender.equals("M"))
                     maleCount++;
@@ -209,7 +209,7 @@ public class FitnessEvaluator {
         // loop through all the classes and check the difference
         for (int i = 0; i < classrooms.length; i++) {
             code2InClass[i] = 0;
-            for (Student student : classrooms[i].getStudents()) {
+            for (Student student : classrooms[i].getStudents().values()) {
                 if (student.getCodeType() == 2) {
                     code2InClass[i]++;
                     totalcode2++;
@@ -318,7 +318,7 @@ public class FitnessEvaluator {
 
         // loop through all the students and check if the student is above the minimum grade for the major's class
         for (int i = 0; i < classrooms.length; i++) {
-            for (Student student : classrooms[i].getStudents()) {
+            for (Student student : classrooms[i].getStudents().values()) {
                 // get the major of the class
                 Major major = majors.get(classrooms[i].getMajorID());
 

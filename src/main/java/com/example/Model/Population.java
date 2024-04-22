@@ -75,7 +75,7 @@ public class Population {
         return sum;
     }
 
-    // order the individuals in the population by their fitness
+    // order the individuals in the population by their fitness in ascending order
     public void orderByFitness() {
         // use collections.sort to order the individuals by their fitness
         Collections.sort(this.individuals, new Comparator<Individual>() {
@@ -83,8 +83,7 @@ public class Population {
             // compare the fitness of the individuals in descending order.
             // returns negetive number if o2 is less than o1, positive if greater and 0 if equal.
             public int compare(Individual o1, Individual o2) {
-                // switched from o1.getFitness() - o2.getFitness() to o2.getFitness() - o1.getFitness() to sort in descending order from highest to lowest
-                return Double.compare(o2.getFitness(), o1.getFitness());
+                return Double.compare(o1.getFitness(), o2.getFitness());
             }
         });
     }
@@ -110,4 +109,18 @@ public class Population {
         // Return the individual with the highest fitness
         return bestIndividual;
     }
+
+    /*
+     * switch between the individual in the index the function got and the last individual in the population
+    */
+    public void switchIndividuals(int index) {
+        // get the last individual in the population
+        Individual lastIndividual = this.individuals.get(this.individuals.size() - 1);
+        // get the individual in the index
+        Individual individual = this.individuals.get(index);
+        // switch the individuals
+        this.individuals.set(index, lastIndividual);
+        this.individuals.set(this.individuals.size() - 1, individual);
+    }
+
 }

@@ -419,7 +419,7 @@ public class DB {
         HashMap<String, Integer> studentClassroomMap = new HashMap<>();
         // add the students and their classrooms to the map
         for (ClassRoom classroom : classrooms) {
-            for (Student student : classroom.getStudents()) {
+            for (Student student : classroom.getStudents().values()) {
                 studentClassroomMap.put(student.getStudentID(), classroom.getClassID());
             }
         }

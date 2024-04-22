@@ -61,7 +61,7 @@ public class SecondaryController {
             textFlow.getChildren().add(classAndMajorText);
             
             // Loop through the students in the class
-            for (Student student : bestIndividual.getClassrooms()[i].getStudents()) {
+            for (Student student : bestIndividual.getClassrooms()[i].getStudents().values()) {
                 // Create and style the text for each student
                 Text studentText = new Text("   • " + student.getStudentID() + " - " + student.getName() + "\n");
 
