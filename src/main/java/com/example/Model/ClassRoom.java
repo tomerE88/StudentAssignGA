@@ -12,8 +12,6 @@ public class ClassRoom {
     private int majorID;
     // hashmap of all students in the class and their index in the class
     private HashMap<Integer, Student> students;
-    // // array list of all students in the class
-    // private ArrayList<Student> students;
 
     // Constructor to initialize a new ClassRoom object
     public ClassRoom(int classID, String className, int maxStudents, int minStudents, int majorID) {
@@ -32,7 +30,6 @@ public class ClassRoom {
         this.maxStudents = other.maxStudents;
         this.minStudents = other.minStudents;
         this.majorID = other.majorID;
-        // this.students = new ArrayList<Student>(other.getStudents());
         this.students = new HashMap<Integer, Student>();
         for (int i = 0; i < other.students.size(); i++) {
             this.students.put(i, other.students.get(i));
@@ -45,7 +42,6 @@ public class ClassRoom {
         this.maxStudents = other.maxStudents;
         this.minStudents = other.minStudents;
         this.majorID = other.majorID;
-        // this.students = new ArrayList<Student>();
         this.students = new HashMap<Integer, Student>();
     }
 
@@ -53,9 +49,6 @@ public class ClassRoom {
     public ClassRoom generateRandomClassroom(int i) {
         int classID = i;
         String className = "Class" + classID;
-        // int maxStudents = rand.nextInt(50);
-        // int minStudents = rand.nextInt(50);
-        // int majorID = rand.nextInt(100);
         return new ClassRoom(classID, className, maxStudents, minStudents, majorID);
     }
 
@@ -63,67 +56,25 @@ public class ClassRoom {
         return majorID;
     }
 
-    public void setMajorID(int majorID) {
-        this.majorID = majorID;
-    }
-
-    
     public int getClassID() {
         return classID;
     }
 
-    public void setClassID(int classID) {
-        this.classID = classID;
-    }
-
-    
     public String getClassName() {
         return className;
     }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
     
     public int getMaxStudents() {
         return maxStudents;
     }
 
-    public void setMaxStudents(int maxStudents) {
-        this.maxStudents = maxStudents;
-    }
-
-
     public int getMinStudents() {
         return minStudents;
     }
 
-    public void setMinStudents(int minStudents) {
-        this.minStudents = minStudents;
-    }
-
-    // // Getter and setter for the students array
-    // public ArrayList<Student> getStudents() {
-    //     return this.students;
-    // }
     // Getter and setter for the students hashmap
     public HashMap<Integer, Student> getStudents() {
         return this.students;
-    }
-
-    // // convert tyhe students to array and return array of students
-    // public Student[] getStudentsArray() {
-    //     return this.students.values().toArray(new Student[0]);
-    // }
-
-    public void setStudents(HashMap<Integer, Student> students) {
-        if (students.size() <= maxStudents) {
-            this.students = students;
-        } else {
-            // Handle the case where more students are added than the maximum capacity
-            System.out.println("Error: Attempting to add more students than the maximum capacity of the class.");
-        }
     }
 
     // Method to add a single student to the class
@@ -170,10 +121,7 @@ public class ClassRoom {
         return false; // Student not found
     }
 
-    // clears all students from this classroom
-    public void clearStudents() {
-        this.students.clear();
-    }
+    
 
     // get student from index
     public Student getStudentFromIndex(int index) {
@@ -183,25 +131,6 @@ public class ClassRoom {
     // checks if the class if full
     public boolean isFull() {
         return getNumStudents() >= this.maxStudents;
-    }
-
-    // // Method to remove a student from the classroom
-    // public void removeStudent(Student student) {
-    //     // Remove the student from the list
-    //     students.remove(student);
-    // }
-
-
-    // Method to display class room information
-    @Override
-    public String toString() {
-        return "ClassRoom{" +
-               "classID=" + classID +
-               ", className='" + className + '\'' +
-               ", maxStudents=" + maxStudents +
-               ", majorID=" + majorID +
-               ", students=" + students +
-               '}';
     }
     
 }

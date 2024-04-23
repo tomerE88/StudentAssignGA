@@ -47,38 +47,7 @@ public class DB {
             System.out.println("Error closing the database connection: " + e.getMessage());
         }
     }
-
-
-    // summon function FitnessFunction from the database, and save the result in a double variable
-    public double fitnessFunction(int majorPrefRank, int friendsRank, int sameCityRank, int genderRank, int specialAssignRank, int studentTypeRank, int gradesRank) {
-        double fitness = 0;
-        try {
-            // the query that gets the FitnessFunction function from the database
-            String fitnessStr = "SELECT FitnessFunction(?, ?, ?, ?, ?, ?, ?)";
-            // create a statement
-            PreparedStatement statement = this.connection.prepareStatement(fitnessStr);
-            // set all the parameters of the function
-            statement.setInt(1, majorPrefRank);
-            statement.setInt(2, friendsRank);
-            statement.setInt(3, sameCityRank);
-            statement.setInt(4, genderRank);
-            statement.setInt(5, specialAssignRank);
-            statement.setInt(6, studentTypeRank);
-            statement.setInt(7, gradesRank);
-            // execute the query
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                // save the result in the variable
-                fitness = resultSet.getDouble(1);
-            }
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        return fitness;
-    }
     
-
     // get array of major preferences and a studentID and
     // add to the major array the three major preferences of the student sorted by the preference
     // so that the first preference will be at index 0 and so on
@@ -98,27 +67,6 @@ public class DB {
             while (resultSet.next() && i<3) {
                 mp[i].majorID = resultSet.getInt(2);
                 System.out.println(mp[i].getMajorID());
-                i++;
-            }
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-    }
-
-    // get array of friends and a studentID and add the friends of the student order by the preference
-    public void bestFriends(int[] friends, String studID) {
-        try {
-        PreparedStatement statement = this.connection.prepareStatement("SELECT friendID, preference\n" +
-        "    FROM friends\n" + 
-        "    WHERE studentID = ?\n" +
-        "    ORDER BY preference;");
-        statement.setString(1, studID);
-            ResultSet resultSet = statement.executeQuery();
-            int i = 0;
-            while (resultSet.next() && i<3) {
-                friends[i] = resultSet.getInt(1);
-                System.out.println(friends[i]);
                 i++;
             }
         }
@@ -308,6 +256,7 @@ public class DB {
         }
         return friends;
     }
+
     // get all major preferences of a student and insert them into a Major array of max length 3
     public Major[] getMajorPreferencesFromID(String studentID) {
         Major[] majorPreferences = new Major[3];
@@ -363,34 +312,6 @@ public class DB {
         return null; // no student with this ID
     }
 
-    // get classroom from the database with the given ID
-    public ClassRoom getClassRoomFromID(int classID) {
-        ClassRoom classRoom;
-        try {
-            PreparedStatement statement = this.connection.prepareStatement("SELECT *\n" +
-            "FROM classroom c\n" + 
-            "WHERE c.classroomID = ?;");
-            statement.setInt(1, classID);
-            ResultSet resultSet = statement.executeQuery();
-            // checks if there is a student with this ID
-            if (resultSet.next()) {
-                // creates a new student
-                classRoom = new ClassRoom(
-                        resultSet.getInt("classroomID"),
-                        resultSet.getString("classroomName"),
-                        resultSet.getInt("maxStudents"),
-                        resultSet.getInt("minStudents"),
-                        resultSet.getInt("classroomMajor")
-                    );
-                    return classRoom;
-                }
-        }
-        catch (Exception e) {
-            System.out.println(e);
-        }
-        return null; // no class with this ID
-    }
-
     /*
      * set the classroomID for a student in the database
      */
@@ -411,71 +332,52 @@ public class DB {
     }
 
     /*
-     * get array of classrooms and
-     * create a mapping from student ID to classroom
-     */
-    private static HashMap<String, Integer> createStudentClassroomMap(ClassRoom[] classrooms) {
-        // Create a mapping from student ID (String) to classroom
-        HashMap<String, Integer> studentClassroomMap = new HashMap<>();
-        // add the students and their classrooms to the map
-        for (ClassRoom classroom : classrooms) {
-            for (Student student : classroom.getStudents().values()) {
-                studentClassroomMap.put(student.getStudentID(), classroom.getClassID());
-            }
-        }
-        return studentClassroomMap;
-    }
-
-    /*
+     * get the classrooms and
      * set the classroomID for each student in the database
      */
     public void setClassroomIDForAllStudents(ClassRoom[] classrooms) {
+        Connection conn = null;
         try {
-            // create a statement
-            // the query that gets all the students sorted by their ID
-            PreparedStatement statement = this.connection.prepareStatement("SELECT * FROM students\n" +
-            "ORDER BY studentID;");
-
-            // create a mapping from student ID (String) to classroom ID (Integer)
-            HashMap<String, Integer> studentClassroomMap = createStudentClassroomMap(classrooms);
-
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                // studentID
-                String studentID = resultSet.getString("studentID");
-                // classroomID
-                int classroomID = studentClassroomMap.get(studentID);
-                // for each student, set the classroomID
-                setClassroomIDForStudent(resultSet.getString("studentID"), classroomID);
+            conn = this.connection;
+            // disable autoCommit so all the SQL commands are executed as a single transaction
+            conn.setAutoCommit(false);
+    
+            // Create a prepared statement for updating the classroom ID for a student
+            PreparedStatement updateStmt = conn.prepareStatement(
+                "UPDATE students SET classroomID = ? WHERE studentID = ?");
+    
+            // Loop through the classrooms and students to update the classroom ID for each student
+            for (ClassRoom classroom : classrooms) {
+                for (Student student : classroom.getStudents().values()) {
+                    // set the classroomID
+                    updateStmt.setInt(1, classroom.getClassID());
+                    // set the studentID
+                    updateStmt.setString(2, student.getStudentID());
+                    // Add the update to the batch
+                    updateStmt.executeUpdate();
+                }
             }
-        }
-        catch (Exception e) {
-            System.out.println(e);
+            
+            // Commit all updates as a single transaction
+            conn.commit();
+        } catch (SQLException e) {
+            System.out.println("Error setting classroom IDs: " + e.getMessage());
+            if (conn != null) {
+                try {
+                    conn.rollback();  // Roll back the transaction on error
+                } catch (SQLException ex) {
+                    System.out.println("Error rolling back: " + ex.getMessage());
+                }
+            }
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);  // Reset auto-commit to true
+                } catch (SQLException e) {
+                    System.out.println("Error resetting auto-commit: " + e.getMessage());
+                }
+            }
         }
     }
 
-
-
-
-    // public static void main(String[] args) {
-
-    //     try {
-
-    //         DB db = new DB();
-    //         // make a student out of studentID 100000002 and print all ID's of students in same city as him
-    //         Student stud;
-    //         double fitness = db.fitnessFunction(1, 2, 3, 4, 5, 6, 7);
-    //         stud = db.getStudentFromID("100000002");
-    //         System.out.println("*****************************");
-    //         System.out.println("gerso");
-    //         System.out.println(stud.getName());
-    //         System.out.println("fitness: " + fitness);
-    //         System.out.println("*****************************");
-    
-    //             db.disconnectSql();
-    //     }
-    //     catch (Exception e) {
-    //         System.out.println(e);
-    //     }
-    //     }
 }

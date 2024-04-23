@@ -11,30 +11,13 @@ public class City {
         this.name = name;
     }
 
-    // Getters and Setters for each attribute
+    // Getters
     public int getCityID() {
         return cityID;
     }
 
-    public void setCityID(int cityID) {
-        this.cityID = cityID;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    // Method to display city information
-    @Override
-    public String toString() {
-        return "City{" +
-               "cityID=" + cityID +
-               ", name='" + name + '\'' +
-               '}';
     }
 
 }

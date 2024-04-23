@@ -13,21 +13,13 @@ public class Major {
         this.requiredGrade = requiredGrade;
     }
 
-    // Getters and Setters for each attribute
+    // Getters
     public int getMajorID() {
         return majorID;
     }
 
-    public void setMajorID(int majorID) {
-        this.majorID = majorID;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public double getRequiredGrade() {
@@ -37,17 +29,5 @@ public class Major {
     public void setRequiredGrade(double requiredGrade) {
         this.requiredGrade = requiredGrade;
     }
-
-    // Method to display major information
-    @Override
-    public String toString() {
-        return "Major{" +
-               "majorID=" + majorID +
-               ", name='" + name + '\'' +
-               ", requiredGrade=" + requiredGrade +
-               '}';
-    }
-
-    // Additional methods can be added as needed
 }
 

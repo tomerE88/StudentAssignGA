@@ -5,12 +5,21 @@ import java.util.*;
 public class Population {
     
     protected ArrayList<Individual> individuals; // array of single solutions
-    // private double populationFitness = -1; // fitness of the population!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // add population size
+    protected int populationSize; // number of individuals in the population
+
+    // constructor that generate a population with a specific size
+    public Population(int populationSize) {
+        this.populationSize = populationSize;
+        this.individuals = new ArrayList<Individual>(populationSize);
+    }
+
+    // New constructor for an empty population
+    public Population() {
+        this.individuals = new ArrayList<>();
+    }
 
     // constructor that generate a random population
-    public Population(int populationSize, ClassRoom[] classrooms, Collection<Student> students) {
-        this.individuals = new ArrayList<Individual>(populationSize);
+    public void randomPopulation(ClassRoom[] classrooms, Collection<Student> students) {
         ArrayList<Student> studentsList = new ArrayList<>(students);
 
         // loop through all the individuals in the population
@@ -29,11 +38,6 @@ public class Population {
             // add the individual to the population
             this.individuals.add(individual);
         }
-    }
-
-    // New constructor for an empty population
-    public Population() {
-        this.individuals = new ArrayList<>();
     }
 
     // getters
@@ -62,7 +66,7 @@ public class Population {
     }
 
     // return the number of individuals in a population
-    public int populationSize() {
+    public int getPopulationSize() {
         return this.individuals.size();
     }
 

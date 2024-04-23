@@ -13,14 +13,6 @@ public class MainGA {
     private HashMap<Integer, Major> majors;
 
     // setters and getters
-    public DB getDb() {
-        return db;
-    }
-
-    public void setDb(DB db) {
-        this.db = db;
-    }
-
     public HashMap<String, Student> getStudents() {
         return students;
     }
@@ -41,20 +33,11 @@ public class MainGA {
         return specialRequests;
     }
 
-    public void setSpecialRequests(SpecialRequest[] specialRequests) {
-        this.specialRequests = specialRequests;
-    }
-
     public HashMap<Integer, Major> getMajors() {
         return this.majors;
     }
 
-    public void setMajors(HashMap<Integer, Major> majors) {
-        this.majors = majors;
-    }
-
     public MainGA() {
-        int counter = 0;
          // get all students from the database
          this.db = new DB();
          this.students = this.db.getAllStudents();
@@ -64,48 +47,14 @@ public class MainGA {
          for (Student student : this.students.values()) {
              student.setFriends(this.db.getFriendsFromID(student.getStudentID()));
              student.setMajorPreferences(this.db.getMajorPreferencesFromID(student.getStudentID()));
-             counter++;
          }
-         System.out.println("hello hello hello hello hello hello hello hello hello" + counter);
 
+         // get all majors from the database
          this.majors = db.getAllMajors();
-
+         // get all special requests from the database
          this.specialRequests = this.db.getAllSpecialRequests();
 
          // close the sql connection
         db.disconnectSql();
-    }
-
-    public static void main(String[] args) {
-        MainGA mainga = new MainGA();
-
-        System.out.println("**************************************************************************");
-        // print the student with the key 100000002
-        System.out.println("student 100000002: " + mainga.students.get("100000002"));
-        Student friends[] = mainga.students.get("100000002").getFriends();
-        System.out.println("friends of student 100000002: " + friends[0].getStudentID() + " " + friends[1].getStudentID() + " " + friends[2].getStudentID());
-        Major majorPreferences[] = mainga.students.get("100000002").getMajorPreferences();
-        System.out.println("major preferences of student 100000002: " + majorPreferences[0].getMajorID() + " " + majorPreferences[1].getMajorID() + " " + majorPreferences[2].getMajorID());
-        // print the classroom with the key 2
-        System.out.println("classroom2: " + mainga.classrooms[2]);
-        System.out.println("**************************************************************************");
-        System.out.println(mainga.specialRequests[0].getStudentID1() + " " + mainga.specialRequests[0].getStudentID2() + " " + mainga.specialRequests[0].getReason());
-
-
-
-        // Create GA object
-        ClassroomAssignGA ga = new ClassroomAssignGA(100, 100, 0.01, 0.9, 2);
-        // Initialize population
-        Population population = ga.getPopulation();
-        // // Evaluate population
-        // ga.evalPopulation(population);
-        
-        // Print fitness
-        // System.out.println("Found solution in " + generation + " generations");
-        System.out.println("Best solution: " + population.getFittest().getFitness());
-        System.out.println("Best solution: " + population.getFittest().toString());
-
-        // Close the database connection
-        mainga.db.disconnectSql();
     }
 }

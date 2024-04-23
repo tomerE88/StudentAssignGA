@@ -8,7 +8,6 @@ import java.util.Set;
 
 public class ClassroomAssignGA {
 
-    private int populationSize;
     private int maxGenerations;
     private double mutationRate;
     private double crossoverRate;
@@ -22,12 +21,11 @@ public class ClassroomAssignGA {
     public ClassroomAssignGA(int populationSize, int maxGenerations, double mutationRate, double crossoverRate,
      double eliteCount) {
         ClassroomAssignGA.countGenerations = 0;
-        this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
         this.eliteCount = eliteCount;
-
+        this.pop = new Population(populationSize); // create new population
     }
 
     // setters
@@ -35,51 +33,7 @@ public class ClassroomAssignGA {
         this.ranks = ranks;
     }
 
-    public void setPopulationSize(int populationSize) {
-        this.populationSize = populationSize;
-    }
-
-    public void setMaxGenerations(int maxGenerations) {
-        this.maxGenerations = maxGenerations;
-    }
-
-    public void setMutationRate(double mutationRate) {
-        this.mutationRate = mutationRate;
-    }
-
-    public void setcrossoverRate(double crossoverRate) {
-        this.crossoverRate = crossoverRate;
-    }
-
-    public void setEliteCount(double eliteCount) {
-        this.eliteCount = eliteCount;
-    }
-
     // getters
-    public int getPopulationSize() {
-        return populationSize;
-    }
-
-    public int getMaxGenerations() {
-        return maxGenerations;
-    }
-
-    public double getMutationRate() {
-        return mutationRate;
-    }
-
-    public double getCrossoverRate() {
-        return crossoverRate;
-    }
-
-    public double getEliteCount() {
-        return eliteCount;
-    }
-    
-    public static int getCountGenerations() {
-        return countGenerations;
-    }
-
     public Population getPopulation() {
         return pop;
     }
@@ -90,7 +44,7 @@ public class ClassroomAssignGA {
 
     // function that creates a new generation
     public void createGeneration() {
-        int index = 0, popSize = this.pop.populationSize();
+        int index = 0, popSize = this.pop.getPopulationSize();
         Individual parent1, parent2, newIndividual1, newIndividual2;
         // create a new empty population
         Population newPopulation = new Population();
@@ -103,7 +57,7 @@ public class ClassroomAssignGA {
         double cumulativeProportions[] = createRouletteWheel();
 
         // crossover to 70% of the population
-        while (index < this.populationSize * this.crossoverRate) {
+        while (index < this.pop.getPopulationSize() * this.crossoverRate) {
             // System.out.println("crossover loop: " + index);
             // get two parents from previous generation
             parent1 = rouletteSelection(cumulativeProportions);
@@ -130,13 +84,13 @@ public class ClassroomAssignGA {
 
         // add 10% of the population as elite
         while (counter < popSize * this.eliteCount) {
-            newIndividual1 = this.pop.getIndividual(pop.populationSize() - 1);
+            newIndividual1 = this.pop.getIndividual(pop.getPopulationSize() - 1);
             // add the elite individuals to the new population
             newPopulation.individuals.add(newIndividual1);
 
             // remove in O(1)
             // remove the individual from the population
-            pop.individuals.remove(pop.populationSize() - 1);
+            pop.individuals.remove(pop.getPopulationSize() - 1);
 
             // increment the index
             index--;
@@ -146,8 +100,8 @@ public class ClassroomAssignGA {
         int selectedIndividualIndex;
         
         // add the rest of the population to the new population with selection
-        while (newPopulation.populationSize() < popSize) {
-            // System.out.println("rest loop: " + newPopulation.populationSize());
+        while (newPopulation.getPopulationSize() < popSize) {
+            // System.out.println("rest loop: " + newPopulation.getPopulationSize());
             if (this.pop.individuals.size() < 2)
                 selectedIndividualIndex = 0;
                 // newIndividual1 = this.pop.getIndividual(0);
@@ -162,7 +116,7 @@ public class ClassroomAssignGA {
             // switch the places of the individual with the last individual in the population
             pop.switchIndividuals(selectedIndividualIndex);
             // remove the individual from the population
-            pop.individuals.remove(pop.populationSize() - 1);
+            pop.individuals.remove(pop.getPopulationSize() - 1);
             
             // // remove the new individual from the old population
             // this.pop.individuals.remove(newIndividual1);
@@ -211,17 +165,17 @@ public class ClassroomAssignGA {
         // sum of all the fitness of the individuals in the population
         double sum = pop.sumFitness();
         // array of the proportions of the individuals in the population
-        double proportions[] = new double[pop.populationSize()];
+        double proportions[] = new double[pop.getPopulationSize()];
         // array of cumulative proportions
-        double cumulativeProportions[] = new double[pop.populationSize()];
+        double cumulativeProportions[] = new double[pop.getPopulationSize()];
         double cumulativeTotal = 0; // total of the cumulative proportions
 
-        for (int i = 0; i < pop.populationSize(); i++) {
+        for (int i = 0; i < pop.getPopulationSize(); i++) {
             // calculate the proportion of the individual in the population (fitness / sum)
             proportions[i] = pop.getIndividual(i).getFitness() / sum;
         }
         // sum all the proportions and add them to the cumulative proportions array
-        for (int i = 0; i < pop.populationSize(); i++) {
+        for (int i = 0; i < pop.getPopulationSize(); i++) {
             // add the proportion to the cumulative total
             cumulativeProportions[i] = proportions[i] + cumulativeTotal;
             cumulativeTotal += proportions[i];
@@ -235,35 +189,48 @@ public class ClassroomAssignGA {
      * and return a random individual out of the roulette
      */
     public Individual rouletteSelection(double[] cumulativeProportions) {
-        // generate a random number between 0 and 1
-        double random = Math.random();
-        double cumulativeTotal = cumulativeProportions[pop.populationSize() - 1];
-        random = random * cumulativeTotal; // multiply the random number by the cumulative total
-        // find the individual that corresponds to the random number
-        for (int i = 0; i < pop.populationSize(); i++) {
-            // if the random number is less than the cumulative proportion of the individual
-            if (random < cumulativeProportions[i]) {
-                // return the individual
-                return this.pop.getIndividual(i);
-            }
+        // generate a random number between 0 and 1 and multiply the random number by the cumulative total
+        double random = Math.random() * cumulativeProportions[cumulativeProportions.length - 1];
+        
+        // get the index of the random individual
+        int index = binarySearchRoulette(cumulativeProportions, random);
+        if (index >= 0) {
+            return pop.getIndividual(index);
         }
-        // if the random number is not found return null
         return null;
     }
-    
-    // /*
-    //  * return random individual
-    //  */
-    // private Individual getRandomIndividual() {
-    //     int randomIndex = (int) (Math.random() * pop.populationSize()); // Generate a random index within the population size
-    //     return this.pop.getIndividual(randomIndex);
-    // }
+
+    /*
+     * gets the cumulative proporrtions from createRouletteWheel
+     * and finds the index of the random individual out of the roulette
+     * in complexity of O(log(n))
+     */
+    public int binarySearchRoulette(double[] cumulativeProportions, double random) {
+        int low = 0, high = cumulativeProportions.length - 1;
+
+        // binary search for the random number in the cumulative proportions
+        while (low <= high) {
+            // find the middle of the array
+            int mid = (low + high) / 2;
+            // 
+            if (random < cumulativeProportions[mid]) {
+                high = mid - 1;
+            } else if (random > cumulativeProportions[mid]) {
+                low = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        
+        // If not exactly found, return the closest higher element (since low > high and low is incremented last) or -1 if not found
+        return low < cumulativeProportions.length ? low : -1;
+    }
 
     /*
      * return random individual index
      */
     private int getRandomIndividualIndex() {
-        int randomIndex = (int) (Math.random() * pop.populationSize()); // Generate a random index within the population size
+        int randomIndex = (int) (Math.random() * pop.getPopulationSize()); // Generate a random index within the population size
         return randomIndex;
     }
 
@@ -280,41 +247,6 @@ public class ClassroomAssignGA {
         checkMaxFitness = pop.getFittest().getFitness() >= maxFitness;
         return (checkMaxGen || checkMaxFitness); // return true if at least one of the criterias are met
     }
-
-    // // procedure that add a mutation to the population - 
-    // // gets one of the individual answers and make a random change in it
-    // private void mutation(Individual individual) {
-    //     // random number between 0 and length of the individual.classrooms - 1
-    //     int randClass = (int) (Math.random() * individual.getClassroomsLength());
-    //     // get the classroom
-    //     ClassRoom class1 = individual.getClassroom(randClass);
-    //     // get a random student from class
-    //     int randStud1 = (int) (Math.random() * class1.getNumStudents());
-    //     // get the student
-    //     Student stud1 = class1.getStudentFromIndex(randStud1);
-
-    //     // random number between 0 and length of the individual.classrooms - 1
-    //     int randNewClass = (int) (Math.random() * individual.getClassroomsLength());
-    //     // get the classroom
-    //     ClassRoom newClass = individual.getClassroom(randNewClass);
-
-    //     // check if every other class already full
-    //     if (!individual.allClassesFull(class1)) {
-    //         // while the classes are not the same and we can insert to another class
-    //         while (newClass == class1 && newClass.getNumStudents() > newClass.getMaxStudents()) {
-    //             // random number between 0 and length of the individual.classrooms - 1
-    //             randNewClass = (int) (Math.random() * individual.getClassroomsLength());
-    //             // get the classroom
-    //             newClass = individual.getClassroom(randNewClass);
-    //         }
-    //         // delete student from previous class
-    //         class1.removeStudent(stud1);
-    //         // insert student to new class
-    //         newClass.addStudent(stud1);
-            
-    //     }
-        
-    // }
 
     public void mutation(Individual individual) {
         // random number between 0 and length of the individual.classrooms - 1
@@ -510,7 +442,7 @@ public class ClassroomAssignGA {
         MainGA mainga = new MainGA();
 
         // generate a random population
-        this.pop = new Population(this.populationSize, mainga.getClassrooms(), mainga.getStudents().values());
+        this.pop.randomPopulation(mainga.getClassrooms(), mainga.getStudents().values());
         // get students from the database
         Student[] students = mainga.getStudents().values().toArray(new Student[0]);
         // get hashmap of all majors and major ID's
@@ -519,7 +451,7 @@ public class ClassroomAssignGA {
         SpecialRequest[]specialRequests = mainga.getSpecialRequests();
         // evaluate the population
         evalPopulation(students, majors, specialRequests, this.ranks);
-        double popAvg = this.pop.sumFitness() / this.pop.populationSize();
+        double popAvg = this.pop.sumFitness() / this.pop.getPopulationSize();
         System.out.println("***************************************************************");
         System.out.println("Generation: " + countGenerations + " Average fitness: " + popAvg);
         System.out.println("***************************************************************");
@@ -538,7 +470,7 @@ public class ClassroomAssignGA {
             // get classrooms from the individuals
             // evaluate the population
             evalPopulation(students, majors, specialRequests, this.ranks);
-            popAvg = this.pop.sumFitness() / this.pop.populationSize();
+            popAvg = this.pop.sumFitness() / this.pop.getPopulationSize();
             System.out.println("***************************************************************");
             System.out.println("Generation: " + countGenerations + " Average fitness: " + popAvg);
             System.out.println("***************************************************************");
