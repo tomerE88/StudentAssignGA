@@ -8,13 +8,21 @@ import java.util.Set;
 
 public class ClassroomAssignGA {
 
+    // number of maximum generations
     private int maxGenerations;
+    // rate of mutation
     private double mutationRate;
+    // rate of crossover
     private double crossoverRate;
+    // rate of elite individuals
     private double eliteCount;
+    // counter of generations
     public static int countGenerations;
+    // current population (contaion individuals)
     private Population pop;
+    // ranks of each craiteria
     private int[] ranks;
+    // hashmap of all majors
     private HashMap<Integer, Major> majors;
 
     // constructor
@@ -47,7 +55,7 @@ public class ClassroomAssignGA {
         int index = 0, popSize = this.pop.getPopulationSize();
         Individual parent1, parent2, newIndividual1, newIndividual2;
         // create a new empty population
-        Population newPopulation = new Population();
+        Population newPopulation = new Population(popSize);
 
         System.out.println("Start of generation: " + countGenerations);
 
@@ -56,7 +64,7 @@ public class ClassroomAssignGA {
 
         double cumulativeProportions[] = createRouletteWheel();
 
-        // crossover to 70% of the population
+        // crossover to 62.2% of the population
         while (index < this.pop.getPopulationSize() * this.crossoverRate) {
             // System.out.println("crossover loop: " + index);
             // get two parents from previous generation
@@ -82,7 +90,7 @@ public class ClassroomAssignGA {
         // use to count the elite individuals
         int counter = 0;
 
-        // add 10% of the population as elite
+        // add 17.7% of the population as elite
         while (counter < popSize * this.eliteCount) {
             newIndividual1 = this.pop.getIndividual(pop.getPopulationSize() - 1);
             // add the elite individuals to the new population
@@ -90,7 +98,7 @@ public class ClassroomAssignGA {
 
             // remove in O(1)
             // remove the individual from the population
-            pop.individuals.remove(pop.getPopulationSize() - 1);
+            pop.individuals.remove(this.pop.getPopulationSize() - 1);
 
             // increment the index
             index--;
@@ -114,12 +122,10 @@ public class ClassroomAssignGA {
 
             // remove in O(1)
             // switch the places of the individual with the last individual in the population
-            pop.switchIndividuals(selectedIndividualIndex);
+            this.pop.switchIndividuals(selectedIndividualIndex);
             // remove the individual from the population
-            pop.individuals.remove(pop.getPopulationSize() - 1);
-            
-            // // remove the new individual from the old population
-            // this.pop.individuals.remove(newIndividual1);
+            this.pop.individuals.remove(pop.getPopulationSize() - 1);
+
             // mutate the new individual
             if (Math.random() < mutationRate) {
                 mutation(newIndividual1);
@@ -133,7 +139,7 @@ public class ClassroomAssignGA {
 
     // fuction that selects the best individuals from the population. gets five random individuals and returns the best one
     public int tournamentSelection() {
-        int candidatesSize = 5;
+        int candidatesSize = 10;
         // list of random individuals
         ArrayList<Individual> candidates = new ArrayList<Individual>();
 
@@ -244,7 +250,7 @@ public class ClassroomAssignGA {
         // checks if number of current generations surpassed the max generations
         checkMaxGen = ClassroomAssignGA.countGenerations > this.maxGenerations;
         // checks if the fitness equals to the max fitness
-        checkMaxFitness = pop.getFittest().getFitness() >= maxFitness;
+        checkMaxFitness = pop.getBestIndividual().getFitness() >= maxFitness;
         return (checkMaxGen || checkMaxFitness); // return true if at least one of the criterias are met
     }
 

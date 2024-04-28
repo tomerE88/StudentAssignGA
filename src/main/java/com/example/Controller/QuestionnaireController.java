@@ -168,7 +168,7 @@ public class QuestionnaireController {
         }
 
         // create instance of the genetic algorithm
-        ClassroomAssignGA cag = new ClassroomAssignGA(100, 100, 0.05, 0.7, 0.1);
+        ClassroomAssignGA cag = new ClassroomAssignGA(100, 100, 0.206, 0.622, 0.177);
 
         // Create a Task for the genetic algorithm to run in the background
         Task<Individual> task = new Task<Individual>() {

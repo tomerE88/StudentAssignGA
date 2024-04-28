@@ -1,12 +1,18 @@
 package com.example.Model;
 
 public class Student {
-    // Attributes of the Student class
+    
+    //student ID
     protected String studentID;
+    // student name
     protected String name;
+    // student gender
     protected String gender;
+    // student average grades
     protected double averageGrades;
+    // city ID of student
     protected int cityID;
+    // code type of student
     protected int codeType;
     // list of top 3 majors that the student wants (index 0 is the best and index 2 is least best)
     protected Major[] majorPreferences;
@@ -39,7 +45,6 @@ public class Student {
         this.averageGrades = averageGrades;
         this.cityID = cityID;
         this.codeType = codeType;
-        //this.majorPreferences;
         this.friends = friends;
     }
 
@@ -91,9 +96,6 @@ public class Student {
     public void setMajorPreferences(Major[] majorPreferences) {
         if (majorPreferences.length <= 3) {
             this.majorPreferences = majorPreferences;
-        } else {
-            // If more than 3 preferences are provided, only take the first 3
-            // this.majorPreferences = new ArrayList<>(majorPreferences.subList(0, 3));
         }
     }
 
@@ -117,32 +119,6 @@ public class Student {
 
     public void setCodeType(int codeType) {
         this.codeType = codeType;
-    }
-
-    // Method to display student information
-    @Override
-    public String toString() {
-        return "Student{" +
-               "studentID=" + studentID +
-               ", name='" + name + '\'' +
-               ", gender='" + gender + '\'' +
-               ", averageGrades=" + averageGrades +
-               ", cityID=" + cityID +
-                ", codeType=" + codeType +
-               ", majorPreferences=" + majorPreferences +
-               ", friends=" + friends +
-               '}';
-    }
-
-
-    public static void main(String[] args) {
-        // Student st = new Student();
-        // Major[] m = new Major[3];
-        // preferencesForStudent(m);
-        // System.out.println(m[0]);
-        // System.out.println(m[1]);
-        // System.out.println(m[2]);
-        
     }
 }
 

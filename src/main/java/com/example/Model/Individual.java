@@ -8,18 +8,14 @@ import com.example.Model.Database.DB;
 
 public class Individual {
 
+    // array of classrooms
     private ClassRoom[] classrooms;
-
+    // fitness of the individual
     private double fitness = -1;
-    private static final int numClassrooms = 5;
 
     // constructors
     public Individual(ClassRoom[] classrooms) {
         this.classrooms = classrooms;
-    }
-
-    public Individual() {
-        this.classrooms = new ClassRoom[numClassrooms];
     }
 
     // getters

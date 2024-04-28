@@ -56,11 +56,11 @@ public class FitnessEvaluator {
     /*
      * the number will be between 0 and 100 and will be calculated by the following formula:
      * the (current score / max score) * 100
-     * the current score is the sum of the priority of the friends in the same class
-     * the max score is the number of students * 6 because each student has 3 friends (1 + 2 + 3 = 6)
+     * the current score is the sum of the best friend score for each student
+     * the max score is the number of students * 3 because each student has 3 friends and if he gets the best friend he gets 3 points
      */
     private static double percentageFriendsScore(Student[] students, ClassRoom[] classrooms) {
-        double maxScore = students.length * 6; // Max score calculation remains the same
+        double maxScore = students.length * 3; // Max score calculation remains the same
         double currentScore = 0;
     
         // Create a mapping from student ID to classroom
@@ -72,16 +72,24 @@ public class FitnessEvaluator {
             ClassRoom studentClassroom = studentClassroomMap.get(student.getStudentID());
             // friends of curre2nt student
             Student[] friends = student.getFriends();
+
+            int oneStudentScore = 0;
+            boolean check = false;
     
             // loop for each friend (max of 3 friends)
             for (int k = 0; k < friends.length; k++) {
                 // classroom of the friend
                 ClassRoom friendClassroom = studentClassroomMap.get(friends[k].getStudentID());
-                if (studentClassroom != null && studentClassroom.equals(friendClassroom)) {
-                    // Add the score to the current score, decreasing as the friend's priority decreases
-                    currentScore += (3 - k);
+                // If the student has a friend in the same classroom and not already added a better friend, add the score
+                if (studentClassroom != null && studentClassroom.equals(friendClassroom) && !check) {
+                    // set check to true to avoid adding the score more than once (best friend will be first priority so already got friend that gets a better score)
+                    check = true;
+                    // The score is 3 for the best friend, 2 for the second best friend, and 1 for the third best friend
+                    oneStudentScore = (3 - k);
                 }
             }
+            // Add the score to the current score, decreasing as the friend's priority decreases
+            currentScore += oneStudentScore;
         }
     
         double percentage = (currentScore / maxScore) * 100;
@@ -344,35 +352,47 @@ public class FitnessEvaluator {
 
     // Fitness function that calculates the fitness score of a given individual based on the weights of the different factors
     public static double fitnessFunction(Student[] students, ClassRoom[] classrooms, HashMap<Integer, Major> majors, SpecialRequest[] specialRequests, int[] ranks) {
-        int counter = 0;
+        // Calculate the sum of all ranks
         int sumRanks = 0;
         for (int i = 0; i < ranks.length; i++) {
             sumRanks += ranks[i];
         }
-        for (int i = 0; i < classrooms.length; i++) {
-            counter += classrooms[i].getNumStudents();
-        }
-        // positive value
+
+        // Calculate the weighted score for each factor
         int majorPrefRank = ranks[0];
-        double majorPrefScore = percentageMajorPreferenceScore(students, classrooms) * majorPrefRank;
-        // positive value
+        double majorPrefScore = 0;
+        if (majorPrefRank != 0)
+             majorPrefScore = percentageMajorPreferenceScore(students, classrooms) * majorPrefRank;
+
         int friendsRank = ranks[1];
-        double friendsScore = percentageFriendsScore(students, classrooms) * friendsRank;
-        // positive value
+        double friendsScore = 0;
+        if (friendsRank != 0)
+            friendsScore = percentageFriendsScore(students, classrooms) * friendsRank;
+
         int sameCityRank = ranks[2];
-        double sameCityScore = percentageSameCity(students, classrooms) * sameCityRank;
-        // negitive value
+        double sameCityScore = 0;
+        if (sameCityRank != 0)
+            sameCityScore = percentageSameCity(students, classrooms) * sameCityRank;
+
         int genderRank = ranks[3];
-        double genderScore = percentageGenderDifference(students, classrooms) * genderRank;
-        // negetive value
+        double genderScore = 0;
+        if (genderRank != 0)
+            genderScore = percentageGenderDifference(students, classrooms) * genderRank;
+
         int specialAssignRank = ranks[4];
-        double specialAssignScore = percentageSpecialRequestAssignments(classrooms, specialRequests) * specialAssignRank;
-        // negetive value
+        double specialAssignScore = 0;
+        if (specialAssignRank != 0)
+            specialAssignScore = percentageSpecialRequestAssignments(classrooms, specialRequests) * specialAssignRank;
+
         int studentTypeRank = ranks[5];
-        double studentTypeScore = percentageStandardDeviationMerge(students, classrooms) * studentTypeRank;
-        // positive value
+        double studentTypeScore = 0;
+        if (studentTypeRank != 0)
+            studentTypeScore = percentageStandardDeviationMerge(students, classrooms) * studentTypeRank;
+
         int gradesRank = ranks[6];
-        double gradesScore = percentageRequiredGrade(classrooms, majors) * gradesRank;
+        double gradesScore = 0;
+        if (gradesRank != 0)
+            gradesScore = percentageRequiredGrade(classrooms, majors) * gradesRank;
 
         // // print all scores
         // System.out.println("major preference score: " + majorPrefScore);
@@ -382,8 +402,6 @@ public class FitnessEvaluator {
         // System.out.println("special assignment score: " + specialAssignScore);
         // System.out.println("student type score: " + studentTypeScore);
         // System.out.println("grades score: " + gradesScore);
-
-        System.out.println("number of studsents in all classrooms: " + counter);
 
         // Calculate the fitness as the sum of all weighted scores
         double fitness = majorPrefScore + friendsScore + sameCityScore + genderScore + specialAssignScore + studentTypeScore + gradesScore;

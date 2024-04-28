@@ -4,9 +4,13 @@ import java.util.*;
 
 public class ClassRoom {
 
+    // ClassRoom ID
     private int classID;
+    // ClassRoom name
     private String className;
+    // Maximum number of students allowed in the class
     private int maxStudents;
+    // Minimum number of students allowed in the class
     private int minStudents;
     // Major associated with the class
     private int majorID;
@@ -101,7 +105,6 @@ public class ClassRoom {
         this.students.remove(removeIndex);
         // add the new student to the class
         this.students.put(removeIndex, StudentAdd);
-        // this.students.add(StudentAdd);
     }
 
     // checks if the student is in the class

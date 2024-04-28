@@ -4,8 +4,10 @@ import java.util.*;
 
 public class Population {
     
-    protected ArrayList<Individual> individuals; // array of single solutions
-    protected int populationSize; // number of individuals in the population
+    // array of single solutions
+    protected ArrayList<Individual> individuals;
+    // number of individuals in the population
+    protected int populationSize;
 
     // constructor that generate a population with a specific size
     public Population(int populationSize) {
@@ -45,21 +47,6 @@ public class Population {
         return this.individuals;
     }
 
-    // return the indivisual with the best fitness
-    public Individual getFittest() {
-        double maxFit = -1;
-        Individual maxInd = this.individuals.get(0);
-        for (int i = 0; i < this.individuals.size(); i++) {
-            if (this.individuals.get(i).getFitness() > maxFit)
-            {
-                maxFit = this.individuals.get(i).getFitness();
-                maxInd = this.individuals.get(i);
-            }
-        }
-        // Return the fittest individual at the offset
-        return maxInd;
-    }
-
     // get rundom individual from array
     public Individual getIndividual(int index) {
         return this.individuals.get(index);
@@ -92,7 +79,7 @@ public class Population {
         });
     }
 
-    // return the individual with the best fitness function
+    // return the individual with the best fitness
     public Individual getBestIndividual() {
         if (this.individuals.isEmpty()) {
             // If the population is empty, return null
