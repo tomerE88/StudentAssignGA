@@ -8,6 +8,10 @@ import com.example.Model.Database.DB;
 
 public class Individual {
 
+    // magic numbers
+    private static final int GET_LAST_INDEX = -1;
+
+    
     // array of classrooms
     private ClassRoom[] classrooms;
     // fitness of the individual
@@ -66,9 +70,12 @@ public class Individual {
             // add the student to the classroom
             boolean added = this.classrooms[classNum++].addStudent(shuffledStudents.get(rand));
             // if student was added
-            if (added)
+            if (added) {
+                // switch the student with the last student in the list
+                shuffledStudents.set(rand, shuffledStudents.get(shuffledStudents.size() + GET_LAST_INDEX));
                 // remove the student from the list
-                shuffledStudents.remove(rand);
+                shuffledStudents.remove(shuffledStudents.size()-1);
+            }
         }
         System.out.println("******************end of random individual******************");
     }

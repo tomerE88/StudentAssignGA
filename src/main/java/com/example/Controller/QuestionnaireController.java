@@ -15,6 +15,13 @@ import com.example.View.App;
 
 public class QuestionnaireController {
 
+    // magic numbers
+    private static final int POPULATION_SIZE = 100;
+    private static final int MAX_GENERATIONS = 100;
+    private static final double MUTATION_RATE = 0.206;
+    private static final double CROSSOVER_RATE = 0.622;
+    private static final double ELITISM = 0.177;
+
     public enum Priority {
         NO_PRIORITY("(0) no priority", 0),
         VERY_LOW_PRIORITY("(1) very low priority", 1),
@@ -168,7 +175,7 @@ public class QuestionnaireController {
         }
 
         // create instance of the genetic algorithm
-        ClassroomAssignGA cag = new ClassroomAssignGA(100, 100, 0.206, 0.622, 0.177);
+        ClassroomAssignGA cag = new ClassroomAssignGA(POPULATION_SIZE, MAX_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, ELITISM);
 
         // Create a Task for the genetic algorithm to run in the background
         Task<Individual> task = new Task<Individual>() {

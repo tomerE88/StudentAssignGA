@@ -6,6 +6,18 @@ import java.util.HashMap;
 
 public class FitnessEvaluator {
 
+    // main numbers
+    private static final int RESET = 0;
+    private static final int FIRST_INDEX = 0;
+    private static final int SECOND_INDEX = 1;
+    private static final int THIRD_INDEX = 2;
+    private static final int FORTH_INDEX = 3;
+    private static final int FIFTH_INDEX = 4;
+    private static final int SIXTH_INDEX = 5;
+    private static final int SEVENTH_INDEX = 6;
+    private static final double MAX_FITNESS = 100;
+    private static final double PERCENTAGE = 100;
+
     /*
      * get array of classrooms and
      * create a mapping from student ID to classroom
@@ -49,7 +61,7 @@ public class FitnessEvaluator {
             }
         }
     
-        double percentage = (currentScore / maxScore) * 100;
+        double percentage = (currentScore / maxScore) * PERCENTAGE;
         return percentage;
     }
 
@@ -92,7 +104,7 @@ public class FitnessEvaluator {
             currentScore += oneStudentScore;
         }
     
-        double percentage = (currentScore / maxScore) * 100;
+        double percentage = (currentScore / maxScore) * PERCENTAGE;
         return percentage;
     }
     
@@ -132,7 +144,7 @@ public class FitnessEvaluator {
         }
 
         // Calculate and return the percentage
-        double percentage = (sameCityCount / totalStudents) * 100;
+        double percentage = (sameCityCount / totalStudents) * PERCENTAGE;
         return percentage;
     }
 
@@ -172,7 +184,7 @@ public class FitnessEvaluator {
         }
 
         // calculate the percentage
-        percentage = (100 - (genderDifference / totalStudents) * 100);
+        percentage = (100 - (genderDifference / totalStudents) * PERCENTAGE);
         return percentage;
     }
 
@@ -200,7 +212,7 @@ public class FitnessEvaluator {
             }
         }
         // calculate the percentage
-        percentage = 100 - ((totalassignments / totalSpecialRequests) * 100);
+        percentage = 100 - ((totalassignments / totalSpecialRequests) * PERCENTAGE);
         return percentage;
     }
 
@@ -314,7 +326,7 @@ public class FitnessEvaluator {
         }
 
         // calculate the percentage
-        percentage = 100 - ((stddev / maxstddev) * 100);
+        percentage = PERCENTAGE - ((stddev / maxstddev) * PERCENTAGE);
         return percentage;
     }
 
@@ -338,7 +350,7 @@ public class FitnessEvaluator {
         }
 
         // calculate the percentage
-        percentage = (totalAccepted / totalStudents) * 100;
+        percentage = (totalAccepted / totalStudents) * PERCENTAGE;
         return percentage;
     }
 
@@ -347,50 +359,50 @@ public class FitnessEvaluator {
      */
     public static double getMaxFitness(int[] ranks) {
         // return the max fitness
-        return 100;
+        return MAX_FITNESS;
     }
 
     // Fitness function that calculates the fitness score of a given individual based on the weights of the different factors
     public static double fitnessFunction(Student[] students, ClassRoom[] classrooms, HashMap<Integer, Major> majors, SpecialRequest[] specialRequests, int[] ranks) {
         // Calculate the sum of all ranks
-        int sumRanks = 0;
+        int sumRanks = RESET;
         for (int i = 0; i < ranks.length; i++) {
             sumRanks += ranks[i];
         }
 
         // Calculate the weighted score for each factor
-        int majorPrefRank = ranks[0];
-        double majorPrefScore = 0;
+        int majorPrefRank = ranks[FIRST_INDEX];
+        double majorPrefScore = RESET;
         if (majorPrefRank != 0)
              majorPrefScore = percentageMajorPreferenceScore(students, classrooms) * majorPrefRank;
 
-        int friendsRank = ranks[1];
-        double friendsScore = 0;
+        int friendsRank = ranks[SECOND_INDEX];
+        double friendsScore = RESET;
         if (friendsRank != 0)
             friendsScore = percentageFriendsScore(students, classrooms) * friendsRank;
 
-        int sameCityRank = ranks[2];
-        double sameCityScore = 0;
+        int sameCityRank = ranks[THIRD_INDEX];
+        double sameCityScore = RESET;
         if (sameCityRank != 0)
             sameCityScore = percentageSameCity(students, classrooms) * sameCityRank;
 
-        int genderRank = ranks[3];
-        double genderScore = 0;
+        int genderRank = ranks[FORTH_INDEX];
+        double genderScore = RESET;
         if (genderRank != 0)
             genderScore = percentageGenderDifference(students, classrooms) * genderRank;
 
-        int specialAssignRank = ranks[4];
-        double specialAssignScore = 0;
+        int specialAssignRank = ranks[FIFTH_INDEX];
+        double specialAssignScore = RESET;
         if (specialAssignRank != 0)
             specialAssignScore = percentageSpecialRequestAssignments(classrooms, specialRequests) * specialAssignRank;
 
-        int studentTypeRank = ranks[5];
-        double studentTypeScore = 0;
+        int studentTypeRank = ranks[SIXTH_INDEX];
+        double studentTypeScore = RESET;
         if (studentTypeRank != 0)
             studentTypeScore = percentageStandardDeviationMerge(students, classrooms) * studentTypeRank;
 
-        int gradesRank = ranks[6];
-        double gradesScore = 0;
+        int gradesRank = ranks[SEVENTH_INDEX];
+        double gradesScore = RESET;
         if (gradesRank != 0)
             gradesScore = percentageRequiredGrade(classrooms, majors) * gradesRank;
 

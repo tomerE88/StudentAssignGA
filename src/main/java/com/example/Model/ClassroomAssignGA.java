@@ -8,6 +8,14 @@ import java.util.Set;
 
 public class ClassroomAssignGA {
 
+    // magic numbers
+    private static final int STARTING_COUNT = 0;
+    private static final int GET_LAST_INDEX = -1;
+    private static final int TOURNAMENT_SIZE = 10;
+    private static final int NO_SUCH_ELEMENT = -1;
+
+
+
     // number of maximum generations
     private int maxGenerations;
     // rate of mutation
@@ -28,7 +36,7 @@ public class ClassroomAssignGA {
     // constructor
     public ClassroomAssignGA(int populationSize, int maxGenerations, double mutationRate, double crossoverRate,
      double eliteCount) {
-        ClassroomAssignGA.countGenerations = 0;
+        ClassroomAssignGA.countGenerations = STARTING_COUNT;
         this.maxGenerations = maxGenerations;
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
@@ -71,8 +79,8 @@ public class ClassroomAssignGA {
             parent1 = rouletteSelection(cumulativeProportions);
             parent2 = rouletteSelection(cumulativeProportions);
             // crossover the parents
-            newIndividual1 = crossoverr(parent1, parent2);
-            newIndividual2 = crossoverr(parent2, parent1);
+            newIndividual1 = crossover(parent1, parent2);
+            newIndividual2 = crossover(parent2, parent1);
             // mutate first individual
             if (Math.random() < mutationRate) {
                 mutation(newIndividual1);
@@ -88,17 +96,17 @@ public class ClassroomAssignGA {
             index += 2;
         }
         // use to count the elite individuals
-        int counter = 0;
+        int counter = STARTING_COUNT;
 
         // add 17.7% of the population as elite
         while (counter < popSize * this.eliteCount) {
-            newIndividual1 = this.pop.getIndividual(pop.getPopulationSize() - 1);
+            newIndividual1 = this.pop.getIndividual(pop.getPopulationSize() - GET_LAST_INDEX);
             // add the elite individuals to the new population
             newPopulation.individuals.add(newIndividual1);
 
             // remove in O(1)
             // remove the individual from the population
-            pop.individuals.remove(this.pop.getPopulationSize() - 1);
+            pop.individuals.remove(this.pop.getPopulationSize() + GET_LAST_INDEX);
 
             // increment the index
             index--;
@@ -124,7 +132,7 @@ public class ClassroomAssignGA {
             // switch the places of the individual with the last individual in the population
             this.pop.switchIndividuals(selectedIndividualIndex);
             // remove the individual from the population
-            this.pop.individuals.remove(pop.getPopulationSize() - 1);
+            this.pop.individuals.remove(pop.getPopulationSize() - GET_LAST_INDEX);
 
             // mutate the new individual
             if (Math.random() < mutationRate) {
@@ -139,7 +147,7 @@ public class ClassroomAssignGA {
 
     // fuction that selects the best individuals from the population. gets five random individuals and returns the best one
     public int tournamentSelection() {
-        int candidatesSize = 10;
+        int candidatesSize = TOURNAMENT_SIZE;
         // list of random individuals
         ArrayList<Individual> candidates = new ArrayList<Individual>();
 
@@ -212,7 +220,7 @@ public class ClassroomAssignGA {
      * in complexity of O(log(n))
      */
     public int binarySearchRoulette(double[] cumulativeProportions, double random) {
-        int low = 0, high = cumulativeProportions.length - 1;
+        int low = STARTING_COUNT, high = cumulativeProportions.length - GET_LAST_INDEX;
 
         // binary search for the random number in the cumulative proportions
         while (low <= high) {
@@ -229,7 +237,7 @@ public class ClassroomAssignGA {
         }
         
         // If not exactly found, return the closest higher element (since low > high and low is incremented last) or -1 if not found
-        return low < cumulativeProportions.length ? low : -1;
+        return low < cumulativeProportions.length ? low : NO_SUCH_ELEMENT;
     }
 
     /*
@@ -282,100 +290,8 @@ public class ClassroomAssignGA {
 
     }
 
-    /*
-     * gets two individuals parents
-     * and return a new individual that will be a crossover of the two parents
-     */
-    public Individual crossover(Individual parent1, Individual parent2) {
-        // Get the number of classrooms in the parents
-        int numberOfClassrooms = parent1.getClassrooms().length;
-        // Determine the random crossover point
-        int crossoverPoint = (int) (Math.random() * (numberOfClassrooms - 1));
-
-        // Set of all students that have been assigned to a classroom
-        Set<Student> assignedStudents = new HashSet<>();
-    
-        // Offspring classrooms
-        ClassRoom[] offspringClassrooms = new ClassRoom[numberOfClassrooms];
-
-        // Copy classrooms from parent1 up to the crossover point, including non-student attributes
-        for (int i = 0; i <= crossoverPoint; i++) {
-            offspringClassrooms[i] = new ClassRoom(parent1.getClassroom(i));
-            // Add students to the set of assigned students
-            assignedStudents.addAll(parent1.getClassroom(i).getStudents().values());
-        }
-
-        //students from parent2, maintaining their order
-        List<Student> studentsOrder = new ArrayList<>();
-
-        // Gather all students from parent2, maintaining the order they appear from start to crossover point
-        for (int i = 0; i <= crossoverPoint; i++) {
-            for (Student student : parent2.getClassroom(i).getStudents().values()) {
-                // add to students order if student is not already assigned
-                if (!assignedStudents.contains(student)) {
-                    studentsOrder.add(student);
-                }
-            }
-        }
-
-        // loop for all classes after crossover point for parent2
-        for (int i = crossoverPoint + 1; i < numberOfClassrooms; i++) {
-            // Create a new classroom, copying non-student attributes from the same classroom in parent1
-            offspringClassrooms[i] = new ClassRoom(parent1.getClassroom(i), false);
-
-             int insertedToClass = 0;
-
-            // looops for each student at current class
-            for (int j = 0; j < parent2.getClassroom(i).getNumStudents(); j++) {
-                Student student = parent2.getClassroom(i).getStudentFromIndex(j);
-
-                // if size of classroom in parent2 is bigger than the same class in parrent 1
-                if (insertedToClass >= parent1.getClassroom(i).getNumStudents())
-                    studentsOrder.add(student);
-                // add the student to his class if student not already assigned
-                else if (!assignedStudents.contains(student)) {
-                    assignedStudents.add(student);
-                    offspringClassrooms[i].addStudent(student);
-                    insertedToClass++;
-                }
-            }
-        }
-
-        System.out.println("assignedStudents size : " + assignedStudents.size());
-        System.out.println("studentsOrder size : " + studentsOrder.size());
-
-        // index of remaining students
-        int currentStudent = 0;
-        // add remaining students from parent2 to the classes
-        for (int i = crossoverPoint + 1; i < numberOfClassrooms; i++) {
-            // loops until new classroom is same size as original class
-            while (parent1.getClassroom(i).getStudents().size() > offspringClassrooms[i].getStudents().size()) {
-                if (currentStudent >= studentsOrder.size())
-                {
-                    System.out.println("why?");
-                }
-                    
-
-                    
-
-
-
-                Student student = studentsOrder.get(currentStudent++);
-                // add maining students to current class while maintaining order from parent2
-                offspringClassrooms[i].addStudent(student);
-                assignedStudents.add(student);
-            }
-        }
-
-        // Debugging log to ensure all students are assigned properly
-        System.out.println("Total students after crossover: " + assignedStudents.size());
-
-        // Create a new Individual with the combined classroom assignments
-        return new Individual(offspringClassrooms);
-    }
-
     // Procedure that performs crossover between two individuals to produce a new offspring
-    public Individual crossoverr(Individual parent1, Individual parent2) {
+    public Individual crossover(Individual parent1, Individual parent2) {
         // Get the number of classrooms in the parents
         int numberOfClassrooms = parent1.getClassrooms().length;
         // Determine the random crossover point
@@ -458,11 +374,6 @@ public class ClassroomAssignGA {
         // evaluate the population
         evalPopulation(students, majors, specialRequests, this.ranks);
         double popAvg = this.pop.sumFitness() / this.pop.getPopulationSize();
-        System.out.println("***************************************************************");
-        System.out.println("Generation: " + countGenerations + " Average fitness: " + popAvg);
-        System.out.println("***************************************************************");
-        bestIndividual = this.pop.getBestIndividual();
-        System.out.println("best Ind: " + bestIndividual.getFitness());
 
         // increment the count of generations
         ClassroomAssignGA.countGenerations++;
@@ -473,7 +384,6 @@ public class ClassroomAssignGA {
         while (!finishGeneration(this.pop, maxFitness)) {
             // create a new generation
             createGeneration();
-            // get classrooms from the individuals
             // evaluate the population
             evalPopulation(students, majors, specialRequests, this.ranks);
             popAvg = this.pop.sumFitness() / this.pop.getPopulationSize();
@@ -482,9 +392,8 @@ public class ClassroomAssignGA {
             System.out.println("***************************************************************");
             // increment the count of generations
             ClassroomAssignGA.countGenerations++;
-            bestIndividual = this.pop.getBestIndividual();
-            System.out.println("best Ind: " + bestIndividual.getFitness());
         }
+        bestIndividual = this.pop.getBestIndividual();
         return bestIndividual;
     }
 

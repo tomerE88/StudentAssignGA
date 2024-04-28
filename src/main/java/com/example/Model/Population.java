@@ -4,6 +4,8 @@ import java.util.*;
 
 public class Population {
     
+    private static final int FIRST_INDIVIDUAL = 0;
+    private static final int GET_LAST_INDEX = -1;
     // array of single solutions
     protected ArrayList<Individual> individuals;
     // number of individuals in the population
@@ -87,7 +89,7 @@ public class Population {
         }
         
         // Start with the first individual as the best candidate
-        Individual bestIndividual = this.individuals.get(0);
+        Individual bestIndividual = this.individuals.get(FIRST_INDIVIDUAL);
         
         // Iterate through the population to find the individual with the highest fitness
         for (Individual individual : this.individuals) {
@@ -106,12 +108,12 @@ public class Population {
     */
     public void switchIndividuals(int index) {
         // get the last individual in the population
-        Individual lastIndividual = this.individuals.get(this.individuals.size() - 1);
+        Individual lastIndividual = this.individuals.get(this.individuals.size() + GET_LAST_INDEX);
         // get the individual in the index
         Individual individual = this.individuals.get(index);
         // switch the individuals
         this.individuals.set(index, lastIndividual);
-        this.individuals.set(this.individuals.size() - 1, individual);
+        this.individuals.set(this.individuals.size() + GET_LAST_INDEX, individual);
     }
 
 }

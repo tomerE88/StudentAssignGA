@@ -17,6 +17,8 @@ import javafx.scene.text.TextFlow;
 
 public class SecondaryController {
 
+    private static final double FONT_SIZE = 16;
+
     @FXML
     private VBox vboxDisplay; // vbox to display the best individual classes
 
@@ -54,7 +56,7 @@ public class SecondaryController {
             
             // Create and style the text for the class and major
             Text classAndMajorText = new Text(bestIndividual.getClassroom(i).getClassName() + " MAJOR: " + major.getName() + "\n");
-            classAndMajorText.setFont(Font.font("System", FontWeight.BOLD, 16));
+            classAndMajorText.setFont(Font.font("System", FontWeight.BOLD, FONT_SIZE));
             
             // Create a text flow to display the class and major
             TextFlow textFlow = new TextFlow();

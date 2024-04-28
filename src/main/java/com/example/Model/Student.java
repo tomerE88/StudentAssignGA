@@ -2,6 +2,7 @@ package com.example.Model;
 
 public class Student {
     
+    private static final int PREFERENCES = 3;
     //student ID
     protected String studentID;
     // student name
@@ -94,7 +95,7 @@ public class Student {
     }
 
     public void setMajorPreferences(Major[] majorPreferences) {
-        if (majorPreferences.length <= 3) {
+        if (majorPreferences.length <= PREFERENCES) {
             this.majorPreferences = majorPreferences;
         }
     }
@@ -104,11 +105,11 @@ public class Student {
     }
 
     public void setFriends(Student[] friends) {
-        if (friends.length <= 3) {
+        if (friends.length <= PREFERENCES) {
             this.friends = friends;
         } else {
             // If more than 3 friends are provided, only take the first 3
-            this.friends = new Student[3];
+            this.friends = new Student[PREFERENCES];
             this.friends = friends;
         }
     }

@@ -9,6 +9,10 @@ import com.example.Model.SpecialRequest;
 import com.example.Model.Student;
 
 public class DB {
+    private static final int FIRST_INDEX = 1;
+    private static final int SECOND_INDEX = 2;
+    private static final int SIZE_OF_PREFERENCES = 3;
+    private static final int THIRD_INDEX = 3;
     private Connection connection; // the connection to the mysqlS
     
     // constructor
@@ -61,11 +65,11 @@ public class DB {
         "WHERE sp.preference <= 3\n" +
         "AND sp.studentID = ?\n" +
         "ORDER BY sp.preference;");
-        statement.setString(1, studID);
+        statement.setString(FIRST_INDEX, studID);
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
             while (resultSet.next() && i<3) {
-                mp[i].majorID = resultSet.getInt(2);
+                mp[i].majorID = resultSet.getInt(SECOND_INDEX);
                 System.out.println(mp[i].getMajorID());
                 i++;
             }
@@ -235,7 +239,7 @@ public class DB {
 
     // get all friends of a student and insert them into a String array of max length 3
     public Student[] getFriendsFromID(String studentID) {
-        Student[] friends = new Student[3];
+        Student[] friends = new Student[SIZE_OF_PREFERENCES];
         Student friend;
         try {
             PreparedStatement statement = this.connection.prepareStatement("SELECT friendID\n" +
@@ -245,7 +249,7 @@ public class DB {
             statement.setString(1, studentID);
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
-            while (resultSet.next() && i<3) {
+            while (resultSet.next() && i < SIZE_OF_PREFERENCES) {
                 friend = getStudentFromID(resultSet.getString(1));
                 friends[i] = new Student (friend);
                 i++;
@@ -259,7 +263,7 @@ public class DB {
 
     // get all major preferences of a student and insert them into a Major array of max length 3
     public Major[] getMajorPreferencesFromID(String studentID) {
-        Major[] majorPreferences = new Major[3];
+        Major[] majorPreferences = new Major[SIZE_OF_PREFERENCES];
         try {
             PreparedStatement statement = this.connection.prepareStatement("SELECT m.majorID, m.majorName, m.requiredGrade, mp.preference\n" +
             "FROM students AS s\n" +
@@ -271,8 +275,8 @@ public class DB {
             statement.setString(1, studentID);
             ResultSet resultSet = statement.executeQuery();
             int i = 0;
-            while (resultSet.next() && i<3) {
-                majorPreferences[i] = new Major(resultSet.getInt(1), resultSet.getString(2), resultSet.getDouble(3));
+            while (resultSet.next() && i < SIZE_OF_PREFERENCES) {
+                majorPreferences[i] = new Major(resultSet.getInt(FIRST_INDEX), resultSet.getString(SECOND_INDEX), resultSet.getDouble(THIRD_INDEX));
                 i++;
             }
         }
@@ -322,8 +326,8 @@ public class DB {
             PreparedStatement statement = this.connection.prepareStatement("UPDATE students\n" +
             "SET classroomID = ?\n" +
             "WHERE studentID = ?;");
-            statement.setInt(1, classroomID);
-            statement.setString(2, studentID);
+            statement.setInt(FIRST_INDEX, classroomID);
+            statement.setString(SECOND_INDEX, studentID);
             statement.executeUpdate();
         }
         catch (Exception e) {
@@ -350,9 +354,9 @@ public class DB {
             for (ClassRoom classroom : classrooms) {
                 for (Student student : classroom.getStudents().values()) {
                     // set the classroomID
-                    updateStmt.setInt(1, classroom.getClassID());
+                    updateStmt.setInt(FIRST_INDEX, classroom.getClassID());
                     // set the studentID
-                    updateStmt.setString(2, student.getStudentID());
+                    updateStmt.setString(SECOND_INDEX, student.getStudentID());
                     // Add the update to the batch
                     updateStmt.executeUpdate();
                 }

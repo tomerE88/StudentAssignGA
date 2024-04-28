@@ -1,8 +1,10 @@
 package com.example.Model;
 
 public class City {
-    // Attributes of the City class
+    
+    // city ID
     private int cityID;
+    // city name
     private String name;
 
     // Constructor to initialize a new City object

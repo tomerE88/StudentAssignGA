@@ -1,10 +1,12 @@
 package com.example.Model;
 
 public class Major {
-    // Attributes of the Major class
+    // major ID
     public int majorID;
+    // major name
     protected String name;
-    protected double requiredGrade; // Minimum grade required for this major
+    // minimum grade required for this major
+    protected double requiredGrade;
 
     // Constructor to initialize a new Major object
     public Major(int majorID, String name, double requiredGrade) {
