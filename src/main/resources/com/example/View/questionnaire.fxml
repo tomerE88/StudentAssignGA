@@ -16,7 +16,7 @@
          <children>
             <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@image-removebg-preview%20(27).png" />
+                  <Image url="@booksPic.png" />
                </image>
             </ImageView>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="96.0" prefWidth="363.0" text="CRITERIAS" textAlignment="CENTER">
@@ -94,7 +94,7 @@
             </VBox>
             <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@image-removebg-preview%20(25).png" />
+                  <Image url="@studentPic.png" />
                </image>
             </ImageView>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="825.0">
