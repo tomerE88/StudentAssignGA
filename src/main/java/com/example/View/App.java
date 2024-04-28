@@ -13,8 +13,11 @@ import java.io.IOException;
  */
 public class App extends Application {
 
+    // magic numbers
     private static final double WIDTH = 640;
     private static final double HEIGHT = 600;
+
+    
     private static Scene scene;
 
     @Override
