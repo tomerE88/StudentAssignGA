@@ -9,6 +9,8 @@ import com.example.Model.SpecialRequest;
 import com.example.Model.Student;
 
 public class DB {
+    
+    // magic numbers
     private static final int FIRST_INDEX = 1;
     private static final int SECOND_INDEX = 2;
     private static final int SIZE_OF_PREFERENCES = 3;

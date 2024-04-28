@@ -4,10 +4,6 @@ import com.example.Model.ClassroomAssignGA;
 import com.example.Model.Individual;
 
 public class testBestSizes {
-
-    // magic numbers
-    private static final int POPULATION_SIZE = 100;
-    private static final int MAX_GENERATIONS = 100;
     
     /*
      * This method runs the genetic algorithm once
@@ -15,7 +11,7 @@ public class testBestSizes {
      */
     public static double runOnce(int[] ranks, double mutation, double elitism, double crossoverRate) {
 
-        ClassroomAssignGA cag = new ClassroomAssignGA(POPULATION_SIZE, MAX_GENERATIONS, mutation, crossoverRate, elitism);
+        ClassroomAssignGA cag = new ClassroomAssignGA(100, 100, mutation, crossoverRate, elitism);
         cag.setRanks(ranks);
         // get the best individual
         Individual bestInd = cag.evolutionCycle();
