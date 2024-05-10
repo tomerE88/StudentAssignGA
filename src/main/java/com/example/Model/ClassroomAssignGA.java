@@ -100,7 +100,7 @@ public class ClassroomAssignGA {
 
         // add 17.7% of the population as elite
         while (counter < popSize * this.eliteCount) {
-            newIndividual1 = this.pop.getIndividual(pop.getPopulationSize() - GET_LAST_INDEX);
+            newIndividual1 = this.pop.getIndividual(pop.getPopulationSize() + GET_LAST_INDEX);
             // add the elite individuals to the new population
             newPopulation.individuals.add(newIndividual1);
 
@@ -132,7 +132,7 @@ public class ClassroomAssignGA {
             // switch the places of the individual with the last individual in the population
             this.pop.switchIndividuals(selectedIndividualIndex);
             // remove the individual from the population
-            this.pop.individuals.remove(pop.getPopulationSize() - GET_LAST_INDEX);
+            this.pop.individuals.remove(pop.getPopulationSize() + GET_LAST_INDEX);
 
             // mutate the new individual
             if (Math.random() < mutationRate) {
@@ -220,7 +220,7 @@ public class ClassroomAssignGA {
      * in complexity of O(log(n))
      */
     public int binarySearchRoulette(double[] cumulativeProportions, double random) {
-        int low = STARTING_COUNT, high = cumulativeProportions.length - GET_LAST_INDEX;
+        int low = STARTING_COUNT, high = cumulativeProportions.length + GET_LAST_INDEX;
 
         // binary search for the random number in the cumulative proportions
         while (low <= high) {
